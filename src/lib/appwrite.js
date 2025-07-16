@@ -2,29 +2,57 @@ import { Client, Account, Databases, Storage, ID, Query } from 'appwrite';
 
 const client = new Client();
 
-// Pastikan environment variables ada
-const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT;
-const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+// Pastikan environment variables ada dengan default values
+const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1';
+const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '66a312130033c02eaceb';
+
+// Log untuk debugging - jangan hapus sampai masalah teratasi
+console.log('🔧 Appwrite Configuration:', {
+    endpoint: endpoint,
+    projectId: projectId,
+    hasEndpoint: !!process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
+    hasProjectId: !!process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID
+});
 
 if (!endpoint || !projectId) {
-    console.error('Missing Appwrite configuration:', { endpoint, projectId });
+    console.error('❌ Missing Appwrite configuration:', { endpoint, projectId });
+    console.error('❌ Environment check:', {
+        NODE_ENV: process.env.NODE_ENV,
+        NEXT_PUBLIC_APPWRITE_ENDPOINT: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
+        NEXT_PUBLIC_APPWRITE_PROJECT_ID: process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID
+    });
 }
 
-// Inisialisasi client dengan kredensial dari environment variables
+// Inisialisasi client
 client
-    .setEndpoint(endpoint || 'https://fra.cloud.appwrite.io/v1')
-    .setProject(projectId || '66a312130033c02eaceb');
+    .setEndpoint(endpoint)
+    .setProject(projectId);
 
 // Buat instance untuk layanan
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const storage = new Storage(client);
 
-// Database dan Collection IDs
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
-const USER_PROFILES_COLLECTION_ID = process.env.NEXT_PUBLIC_USER_PROFILES_COLLECTION_ID;
-const SCAN_RESULTS_COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_SCAN_RESULTS_COLLECTION_ID;
-const STORAGE_BUCKET_ID = process.env.NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID;
+// Database dan Collection IDs dengan fallback
+const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || '685e9c54000491e13998';
+const USER_PROFILES_COLLECTION_ID = process.env.NEXT_PUBLIC_USER_PROFILES_COLLECTION_ID || '68758ae900139830951d';
+const SCAN_RESULTS_COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_SCAN_RESULTS_COLLECTION_ID || '687481df003bce9166b6';
+const STORAGE_BUCKET_ID = process.env.NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || '686f2d1a002bba22496f';
+
+// Pangkalan specific collection IDs - GANTI dengan ID yang sebenarnya
+const PANGKALAN_PRODUCTS_COLLECTION_ID = process.env.NEXT_PUBLIC_PANGKALAN_PRODUCTS_COLLECTION_ID || 'pangkalan_products';
+const ORDERS_COLLECTION_ID = process.env.NEXT_PUBLIC_ORDERS_COLLECTION_ID || 'orders';
+const ORDER_ITEMS_COLLECTION_ID = process.env.NEXT_PUBLIC_ORDER_ITEMS_COLLECTION_ID || 'order_items';
+const DRIVERS_COLLECTION_ID = process.env.NEXT_PUBLIC_DRIVERS_COLLECTION_ID || 'drivers';
+
+export const COLLECTION_IDS = {
+    USER_PROFILES: USER_PROFILES_COLLECTION_ID,
+    SCAN_RESULTS: SCAN_RESULTS_COLLECTION_ID,
+    PANGKALAN_PRODUCTS: PANGKALAN_PRODUCTS_COLLECTION_ID,
+    ORDERS: ORDERS_COLLECTION_ID,
+    ORDER_ITEMS: ORDER_ITEMS_COLLECTION_ID,
+    DRIVERS: DRIVERS_COLLECTION_ID
+};
 
 export const USER_ROLES = {
     USER: 'user',
@@ -459,6 +487,415 @@ export const storageService = {
             return true;
         } catch (error) {
             console.error('Delete file error:', error);
+            throw error;
+        }
+    }
+};
+
+export const productsService = {
+    // Get all products for pangkalan
+    async getProducts(pangkalanId, limit = 50, offset = 0) {
+        try {
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                'pangkalan_products',
+                [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.orderDesc('$createdAt'),
+                    Query.limit(limit),
+                    Query.offset(offset)
+                ]
+            );
+            return response;
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            throw error;
+        }
+    },
+
+    // Create new product
+    async createProduct(pangkalanId, productData) {
+        try {
+            const response = await databases.createDocument(
+                DATABASE_ID,
+                'pangkalan_products',
+                ID.unique(),
+                {
+                    pangkalan_id: pangkalanId,
+                    ...productData
+                }
+            );
+            return response;
+        } catch (error) {
+            console.error('Error creating product:', error);
+            throw error;
+        }
+    },
+
+    // Update product
+    async updateProduct(productId, updateData) {
+        try {
+            const response = await databases.updateDocument(
+                DATABASE_ID,
+                'pangkalan_products',
+                productId,
+                updateData
+            );
+            return response;
+        } catch (error) {
+            console.error('Error updating product:', error);
+            throw error;
+        }
+    },
+
+    // Delete product
+    async deleteProduct(productId) {
+        try {
+            await databases.deleteDocument(
+                DATABASE_ID,
+                'pangkalan_products',
+                productId
+            );
+            return true;
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            throw error;
+        }
+    },
+
+    // Get product stats
+    async getProductStats(pangkalanId) {
+        try {
+            const [total, available, lowStock] = await Promise.all([
+                databases.listDocuments(DATABASE_ID, 'pangkalan_products', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.limit(1)
+                ]),
+                databases.listDocuments(DATABASE_ID, 'pangkalan_products', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.equal('is_available', true),
+                    Query.limit(1)
+                ]),
+                databases.listDocuments(DATABASE_ID, 'pangkalan_products', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.lessThan('stock', 10),
+                    Query.limit(1)
+                ])
+            ]);
+
+            return {
+                total: total.total,
+                available: available.total,
+                lowStock: lowStock.total,
+                unavailable: total.total - available.total
+            };
+        } catch (error) {
+            console.error('Error fetching product stats:', error);
+            throw error;
+        }
+    }
+};
+
+// Orders Service
+export const ordersService = {
+    // Get all orders for pangkalan
+    async getOrders(pangkalanId, status = null, limit = 50, offset = 0) {
+        try {
+            const queries = [
+                Query.equal('pangkalan_id', pangkalanId),
+                Query.orderDesc('order_date'),
+                Query.limit(limit),
+                Query.offset(offset)
+            ];
+
+            if (status) {
+                queries.push(Query.equal('status', status));
+            }
+
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                'orders',
+                queries
+            );
+
+            // Get order items for each order
+            for (let order of response.documents) {
+                const items = await databases.listDocuments(
+                    DATABASE_ID,
+                    'order_items',
+                    [Query.equal('order_id', order.$id)]
+                );
+                order.items = items.documents;
+            }
+
+            return response;
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            throw error;
+        }
+    },
+
+    // Update order status
+    async updateOrderStatus(orderId, status, additionalData = {}) {
+        try {
+            const response = await databases.updateDocument(
+                DATABASE_ID,
+                'orders',
+                orderId,
+                {
+                    status,
+                    ...additionalData
+                }
+            );
+            return response;
+        } catch (error) {
+            console.error('Error updating order status:', error);
+            throw error;
+        }
+    },
+
+    // Get order stats
+    async getOrderStats(pangkalanId) {
+        try {
+            const [total, pending, processing, delivered, completed] = await Promise.all([
+                databases.listDocuments(DATABASE_ID, 'orders', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.limit(1)
+                ]),
+                databases.listDocuments(DATABASE_ID, 'orders', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.equal('status', 'pending'),
+                    Query.limit(1)
+                ]),
+                databases.listDocuments(DATABASE_ID, 'orders', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.equal('status', 'processing'),
+                    Query.limit(1)
+                ]),
+                databases.listDocuments(DATABASE_ID, 'orders', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.equal('status', 'delivered'),
+                    Query.limit(1)
+                ]),
+                databases.listDocuments(DATABASE_ID, 'orders', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.equal('status', 'completed'),
+                    Query.limit(1)
+                ])
+            ]);
+
+            return {
+                total: total.total,
+                pending: pending.total,
+                processing: processing.total,
+                delivered: delivered.total,
+                completed: completed.total
+            };
+        } catch (error) {
+            console.error('Error fetching order stats:', error);
+            throw error;
+        }
+    }
+};
+
+// Drivers Service
+export const driversService = {
+    // Get all drivers for pangkalan
+    async getDrivers(pangkalanId, limit = 50, offset = 0) {
+        try {
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                'drivers',
+                [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.orderDesc('$createdAt'),
+                    Query.limit(limit),
+                    Query.offset(offset)
+                ]
+            );
+            return response;
+        } catch (error) {
+            console.error('Error fetching drivers:', error);
+            throw error;
+        }
+    },
+
+    // Create new driver
+    async createDriver(pangkalanId, driverData) {
+        try {
+            const response = await databases.createDocument(
+                DATABASE_ID,
+                'drivers',
+                ID.unique(),
+                {
+                    pangkalan_id: pangkalanId,
+                    ...driverData
+                }
+            );
+            return response;
+        } catch (error) {
+            console.error('Error creating driver:', error);
+            throw error;
+        }
+    },
+
+    // Update driver
+    async updateDriver(driverId, updateData) {
+        try {
+            const response = await databases.updateDocument(
+                DATABASE_ID,
+                'drivers',
+                driverId,
+                updateData
+            );
+            return response;
+        } catch (error) {
+            console.error('Error updating driver:', error);
+            throw error;
+        }
+    },
+
+    // Delete driver
+    async deleteDriver(driverId) {
+        try {
+            await databases.deleteDocument(
+                DATABASE_ID,
+                'drivers',
+                driverId
+            );
+            return true;
+        } catch (error) {
+            console.error('Error deleting driver:', error);
+            throw error;
+        }
+    },
+
+    // Get driver stats
+    async getDriverStats(pangkalanId) {
+        try {
+            const [total, available] = await Promise.all([
+                databases.listDocuments(DATABASE_ID, 'drivers', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.limit(1)
+                ]),
+                databases.listDocuments(DATABASE_ID, 'drivers', [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.equal('is_available', true),
+                    Query.limit(1)
+                ])
+            ]);
+
+            // Get all drivers to calculate averages
+            const allDrivers = await databases.listDocuments(DATABASE_ID, 'drivers', [
+                Query.equal('pangkalan_id', pangkalanId)
+            ]);
+
+            const totalDeliveries = allDrivers.documents.reduce((sum, driver) => sum + (driver.total_deliveries || 0), 0);
+            const avgRating = allDrivers.documents.length > 0 
+                ? allDrivers.documents.reduce((sum, driver) => sum + (driver.rating || 0), 0) / allDrivers.documents.length 
+                : 0;
+
+            return {
+                total: total.total,
+                available: available.total,
+                totalDeliveries,
+                avgRating: Math.round(avgRating * 10) / 10
+            };
+        } catch (error) {
+            console.error('Error fetching driver stats:', error);
+            throw error;
+        }
+    }
+};
+
+// Analytics Service
+export const analyticsService = {
+    // Get analytics data
+    async getAnalytics(pangkalanId, timeRange = '7d') {
+        try {
+            const now = new Date();
+            let startDate;
+
+            switch (timeRange) {
+                case '7d':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case '30d':
+                    startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case '90d':
+                    startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+                    break;
+                default:
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            }
+
+            // Get orders within time range
+            const orders = await databases.listDocuments(DATABASE_ID, 'orders', [
+                Query.equal('pangkalan_id', pangkalanId),
+                Query.greaterThanEqual('order_date', startDate.toISOString()),
+                Query.orderDesc('order_date')
+            ]);
+
+            // Calculate revenue
+            const currentRevenue = orders.documents.reduce((sum, order) => sum + order.total_amount, 0);
+            
+            // Get previous period for comparison
+            const prevStartDate = new Date(startDate.getTime() - (now.getTime() - startDate.getTime()));
+            const prevOrders = await databases.listDocuments(DATABASE_ID, 'orders', [
+                Query.equal('pangkalan_id', pangkalanId),
+                Query.greaterThanEqual('order_date', prevStartDate.toISOString()),
+                Query.lessThan('order_date', startDate.toISOString())
+            ]);
+
+            const previousRevenue = prevOrders.documents.reduce((sum, order) => sum + order.total_amount, 0);
+
+            // Get product stats
+            const products = await databases.listDocuments(DATABASE_ID, 'pangkalan_products', [
+                Query.equal('pangkalan_id', pangkalanId)
+            ]);
+
+            // Get top products (would need order_items analysis)
+            const orderItems = await databases.listDocuments(DATABASE_ID, 'order_items', [
+                Query.limit(1000) // Get recent order items
+            ]);
+
+            // Group by product and calculate sales
+            const productSales = {};
+            for (const item of orderItems.documents) {
+                if (!productSales[item.product_name]) {
+                    productSales[item.product_name] = { sales: 0, revenue: 0 };
+                }
+                productSales[item.product_name].sales += item.quantity;
+                productSales[item.product_name].revenue += item.total_price;
+            }
+
+            const topProducts = Object.entries(productSales)
+                .map(([name, data]) => ({ name, ...data }))
+                .sort((a, b) => b.sales - a.sales)
+                .slice(0, 5);
+
+            return {
+                revenue: {
+                    current: currentRevenue,
+                    previous: previousRevenue,
+                    change: previousRevenue > 0 ? ((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0
+                },
+                orders: {
+                    current: orders.documents.length,
+                    previous: prevOrders.documents.length,
+                    change: prevOrders.documents.length > 0 ? ((orders.documents.length - prevOrders.documents.length) / prevOrders.documents.length) * 100 : 0
+                },
+                products: {
+                    current: products.documents.length,
+                    previous: products.documents.length, // This would need historical data
+                    change: 0
+                },
+                topProducts,
+                recentOrders: orders.documents.slice(0, 10)
+            };
+        } catch (error) {
+            console.error('Error fetching analytics:', error);
             throw error;
         }
     }
