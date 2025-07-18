@@ -254,11 +254,11 @@ export default function ProductsPage() {
                     <Card key={product.$id} className="overflow-hidden">
                         <div className="aspect-video bg-gray-200 relative">
                             <img 
-                                src={product.image_url || '/images/placeholder-fish.jpg'} 
+                                src={product.image_url || 'https://images.unsplash.com/photo-1497671954146-59a89ff626ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'} 
                                 alt={product.name}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
-                                    e.target.src = '/images/placeholder-fish.jpg';
+                                    e.target.src = 'https://images.unsplash.com/photo-1497671954146-59a89ff626ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
                                 }}
                             />
                             <div className="absolute top-2 right-2">

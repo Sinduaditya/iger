@@ -6,8 +6,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { 
     Home, 
-    Scan, 
-    Map, 
+    Package, 
+    ShoppingCart, 
+    Heart, 
+    ClipboardList,
+    MapPin,
     History, 
     User, 
     Menu, 
@@ -15,65 +18,141 @@ import {
     Bell,
     Settings,
     LogOut,
-    ChevronDown
+    ChevronDown,
+    ScanLine
 } from 'lucide-react';
+import { cartService } from '@/lib/buyer-services';
 import { ChatAssistant } from '@/components/shared/ChatAssistant';
 
-const ProtectedLayout = ({ children }) => {
-    // Ganti 'logout' menjadi 'logoutUser'
+const BuyerLayout = ({ children }) => {
     const { user, loading, logoutUser } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
+    const [isRedirecting, setIsRedirecting] = useState(false);
+
+    // 🔧 FIX: Perbaiki logic redirect untuk mencegah infinite loop
+    useEffect(() => {
+        if (loading) return; // Tunggu loading selesai
+
+        if (!user) {
+            if (!isRedirecting) {
+                setIsRedirecting(true);
+                console.log('🔄 Redirecting to login - no user');
+                router.push('/auth/login');
+            }
+            return;
+        }
+
+        // 🔧 FIX: Terima role 'user' dan 'buyer'
+        if (user.role && !['user', 'buyer'].includes(user.role)) {
+            if (!isRedirecting) {
+                setIsRedirecting(true);
+                console.log('🔄 Redirecting to home - invalid role:', user.role);
+                router.push('/');
+            }
+            return;
+        }
+
+        // Reset redirect state jika user valid
+        if (isRedirecting) {
+            setIsRedirecting(false);
+        }
+
+    }, [user, loading, router, isRedirecting]);
 
     useEffect(() => {
-        if (!loading && !user) {
-            router.push('/login');
+        if (user && !loading && !isRedirecting) {
+            fetchCartCount();
         }
-    }, [user, loading, router]);
+    }, [user, loading, isRedirecting]);
 
     // Close sidebar when route changes on mobile
     useEffect(() => {
         setIsSidebarOpen(false);
     }, [pathname]);
 
-    if (loading || !user) {
+    const fetchCartCount = async () => {
+        try {
+            const summary = await cartService.getCartSummary(user.$id);
+            setCartCount(summary.totalItems);
+        } catch (error) {
+            console.error('Error fetching cart count:', error);
+            setCartCount(0);
+        }
+    };
+
+    // 🔧 FIX: Tampilkan loading lebih lama untuk mencegah flash
+    if (loading || isRedirecting) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-50">
                 <div className="text-center">
-                    <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-600">Loading...</p>
                 </div>
             </div>
         );
     }
 
+    // 🔧 FIX: Jangan render jika tidak ada user
+    if (!user) {
+        return null;
+    }
+
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-    // Update function name untuk menggunakan logoutUser
     const handleLogout = async () => {
         try {
+            setIsRedirecting(true);
             await logoutUser();
-            // Router push sudah ada di dalam logoutUser function
         } catch (error) {
             console.error('Logout error:', error);
+            setIsRedirecting(false);
         }
     };
 
     const isActiveRoute = (route) => {
-        if (route === '/dashboard') {
-            return pathname === '/dashboard';
+        if (route === '/buyer/dashboard') {
+            return pathname === '/buyer/dashboard';
         }
         return pathname.startsWith(route);
     };
 
+    const getPageTitle = () => {
+        const routes = {
+            '/buyer/dashboard': 'Dashboard',
+            '/buyer/products': 'Produk',
+            '/buyer/cart': 'Keranjang',
+            '/buyer/orders': 'Pesanan',
+            '/buyer/favorites': 'Favorit',
+            '/buyer/addresses': 'Alamat',
+            '/buyer/history': 'Riwayat',
+            '/buyer/profile': 'Profil',
+            '/buyer/scan': 'Scan QR'
+        };
+        
+        for (const [route, title] of Object.entries(routes)) {
+            if (pathname.startsWith(route)) return title;
+        }
+        return 'IGER Buyer';
+    };
+
     const menuItems = [
-        { href: '/dashboard', icon: Home, label: 'Dashboard', mobileLabel: 'Home' },
-        { href: '/dashboard/scan', icon: Scan, label: 'Scan QR', mobileLabel: 'Scan' },
-        { href: '/dashboard/map', icon: Map, label: 'Peta Lokasi', mobileLabel: 'Peta' },
-        { href: '/dashboard/history', icon: History, label: 'Riwayat', mobileLabel: 'Riwayat' },
-        { href: '/dashboard/profile', icon: User, label: 'Profil', mobileLabel: 'Profil' },
+        { href: '/buyer/dashboard', icon: Home, label: 'Dashboard' },
+        { href: '/buyer/products', icon: Package, label: 'Produk' },
+        { 
+            href: '/buyer/cart', 
+            icon: ShoppingCart, 
+            label: 'Keranjang'
+        },
+        { href: '/buyer/orders', icon: ClipboardList, label: 'Pesanan' },
+        { href: '/buyer/favorites', icon: Heart, label: 'Favorit' },
+        { href: '/buyer/addresses', icon: MapPin, label: 'Alamat' },
+        { href: '/buyer/history', icon: History, label: 'Riwayat' },
+        { href: '/buyer/scan', icon: ScanLine, label: 'Scan QR' },
+        { href: '/buyer/profile', icon: User, label: 'Profil' },
     ];
 
     return (
@@ -89,17 +168,25 @@ const ProtectedLayout = ({ children }) => {
                     </button>
                     <div className="hidden md:block">
                         <h1 className="text-xl font-semibold text-gray-800">
-                            {pathname === '/dashboard' ? 'Dashboard' : 
-                             pathname.includes('/scan') ? 'Scan QR' :
-                             pathname.includes('/map') ? 'Peta Lokasi' :
-                             pathname.includes('/history') ? 'Riwayat' :
-                             pathname.includes('/profile') ? 'Profil' :
-                             pathname.includes('/settings') ? 'Pengaturan' : 'Dashboard'}
+                            {getPageTitle()}
                         </h1>
                     </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
+                    {/* Cart Icon (Mobile) */}
+                    <Link 
+                        href="/buyer/cart"
+                        className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors relative"
+                    >
+                        <ShoppingCart size={20} className="text-gray-600" />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white rounded-full text-xs flex items-center justify-center">
+                                {cartCount > 9 ? '9+' : cartCount}
+                            </span>
+                        )}
+                    </Link>
+
                     {/* Notification */}
                     <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
                         <Bell size={20} className="text-gray-600" />
@@ -112,9 +199,9 @@ const ProtectedLayout = ({ children }) => {
                             onClick={() => setShowUserMenu(!showUserMenu)}
                             className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-colors"
                         >
-                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
                                 <span className="text-white text-sm font-medium">
-                                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                                    {user?.name?.charAt(0)?.toUpperCase() || 'B'}
                                 </span>
                             </div>
                             <ChevronDown size={16} className={`text-gray-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
@@ -129,11 +216,12 @@ const ProtectedLayout = ({ children }) => {
                                 />
                                 <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                                     <div className="px-4 py-2 border-b border-gray-100">
-                                        <p className="font-medium text-gray-800">{user?.name || 'User'}</p>
-                                        <p className="text-sm text-gray-600">{user?.email || 'user@example.com'}</p>
+                                        <p className="font-medium text-gray-800">{user?.name || 'Buyer'}</p>
+                                        <p className="text-sm text-gray-600">{user?.email || 'buyer@example.com'}</p>
+                                        <p className="text-xs text-orange-600 font-medium">Pembeli</p>
                                     </div>
                                     <Link 
-                                        href="/dashboard/settings"
+                                        href="/buyer/profile"
                                         className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50"
                                         onClick={() => setShowUserMenu(false)}
                                     >
@@ -172,10 +260,13 @@ const ProtectedLayout = ({ children }) => {
                 <div className="p-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-sm">I</span>
+                            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                                <span className="text-white font-bold text-sm">🐟</span>
                             </div>
-                            <h2 className="text-lg font-bold text-gray-800">IGER</h2>
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-800">IGER</h2>
+                                <p className="text-xs text-gray-600">Buyer Panel</p>
+                            </div>
                         </div>
                         <button 
                             onClick={toggleSidebar}
@@ -197,17 +288,24 @@ const ProtectedLayout = ({ children }) => {
                                 key={item.href}
                                 href={item.href} 
                                 className={`
-                                    flex items-center space-x-3 p-3 rounded-lg transition-all duration-200
+                                    flex items-center justify-between p-3 rounded-lg transition-all duration-200 group
                                     ${active 
-                                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700' 
+                                        ? 'bg-orange-50 text-orange-700 border-r-2 border-orange-700' 
                                         : 'text-gray-700 hover:bg-gray-50'
                                     }
                                 `}
                             >
-                                <Icon size={20} className={active ? 'text-blue-700' : 'text-gray-500'} />
-                                <span className={`font-medium ${active ? 'text-blue-700' : ''}`}>
-                                    {item.label}
-                                </span>
+                                <div className="flex items-center space-x-3">
+                                    <Icon size={20} className={active ? 'text-orange-700' : 'text-gray-500 group-hover:text-gray-700'} />
+                                    <span className={`font-medium ${active ? 'text-orange-700' : ''}`}>
+                                        {item.label}
+                                    </span>
+                                </div>
+                                {item.badge && (
+                                    <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full min-w-[20px] text-center">
+                                        {item.badge > 9 ? '9+' : item.badge}
+                                    </span>
+                                )}
                             </Link>
                         );
                     })}
@@ -215,16 +313,17 @@ const ProtectedLayout = ({ children }) => {
 
                 {/* Sidebar Footer */}
                 <div className="absolute bottom-4 left-4 right-4">
-                    <div className="p-3 bg-gray-50 rounded-lg mb-3">
+                    <div className="p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg mb-3">
                         <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
                                 <span className="text-white font-medium">
-                                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                                    {user?.name?.charAt(0)?.toUpperCase() || 'B'}
                                 </span>
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-800 truncate">{user?.name || 'User'}</p>
-                                <p className="text-sm text-gray-600 truncate">{user?.email || 'user@example.com'}</p>
+                                <p className="font-medium text-gray-800 truncate">{user?.name || 'Buyer'}</p>
+                                <p className="text-sm text-gray-600 truncate">{user?.email || 'buyer@example.com'}</p>
+                                <p className="text-xs text-orange-600 font-medium">Pembeli</p>
                             </div>
                         </div>
                     </div>
@@ -243,4 +342,4 @@ const ProtectedLayout = ({ children }) => {
     );
 };
 
-export default ProtectedLayout;
+export default BuyerLayout;

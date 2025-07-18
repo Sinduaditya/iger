@@ -9,6 +9,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -28,33 +29,45 @@ export const AuthProvider = ({ children }) => {
         console.log(
           "👤 User authenticated:",
           currentUser?.email,
+          "Role:",
           currentUser?.role,
         );
 
-        // Redirect logic hanya untuk halaman auth
-        if (pathname === "/login" || pathname === "/register") {
-          // 🔧 FIX: Gunakan currentUser.role, bukan user.role
-          switch (currentUser.role) {
-            case "pangkalan":
-              router.push("/pangkalan/dashboard");
-              break;
-            case "user":
-            default:
-              router.push("/buyer/dashboard");
-              break;
+        // 🔧 FIX: Hanya redirect dari halaman auth, bukan semua halaman
+        if (pathname === "/login" || pathname === "/register" || pathname === "/") {
+          if (!isRedirecting) {
+            setIsRedirecting(true);
+            
+            switch (currentUser.role) {
+              case "pangkalan":
+                console.log("🎯 Redirecting pangkalan user to dashboard");
+                router.push("/pangkalan/dashboard");
+                break;
+              case "user":
+              default:
+                console.log("🎯 Redirecting user to buyer dashboard");
+                router.push("/buyer/dashboard");
+                break;
+            }
+            
+            // Reset redirect state setelah delay
+            setTimeout(() => setIsRedirecting(false), 1000);
           }
         }
       } else {
         setUser(null);
         console.log("🔒 User not authenticated");
 
-        // Redirect ke login jika di protected route
+        // 🔧 FIX: Hanya redirect jika benar-benar di protected route
         const isProtectedRoute =
           pathname.startsWith("/buyer") ||
           pathname.startsWith("/pangkalan");
 
-        if (isProtectedRoute) {
+        if (isProtectedRoute && !isRedirecting) {
+          setIsRedirecting(true);
+          console.log("🔄 Redirecting to login from protected route");
           router.push("/login");
+          setTimeout(() => setIsRedirecting(false), 1000);
         }
       }
     } catch (error) {
@@ -68,26 +81,37 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setLoading(true);
+      console.log("🚀 Starting login process for:", email);
+      
       await authService.login(email, password);
       const user = await authService.getCurrentUser();
       setUser(user);
 
-      console.log("✅ Login successful, redirecting based on role:", user.role);
+      console.log("✅ Login successful, user role:", user.role);
 
+      // 🔧 FIX: Tambahkan delay sebelum redirect
+      setIsRedirecting(true);
+      
       // Redirect berdasarkan role
       switch (user.role) {
         case "pangkalan":
+          console.log("🎯 Redirecting pangkalan user to dashboard");
           router.push("/pangkalan/dashboard");
           break;
         case "user":
         default:
+          console.log("🎯 Redirecting user to buyer dashboard");
           router.push("/buyer/dashboard");
           break;
       }
 
+      // Reset redirect state
+      setTimeout(() => setIsRedirecting(false), 1500);
+
       return { success: true, user };
     } catch (error) {
       console.error("❌ Login error:", error);
+      setIsRedirecting(false);
       return {
         success: false,
         error: appwriteHelpers.formatError(error),
@@ -102,7 +126,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       console.log("🚀 Starting registration process:", userData.email, role);
 
-      
       const user = await authService.register(userData);
 
       // Wait longer untuk memastikan profile tersimpan
@@ -132,6 +155,7 @@ export const AuthProvider = ({ children }) => {
 
   const logoutUser = async () => {
     try {
+      setIsRedirecting(true);
       await authService.logout();
       setUser(null);
       console.log("✅ Logout successful");
@@ -140,12 +164,14 @@ export const AuthProvider = ({ children }) => {
       console.error("❌ Logout failed:", error);
       setUser(null);
       router.push("/login");
+    } finally {
+      setIsRedirecting(false);
     }
   };
 
   const value = {
     user,
-    loading,
+    loading: loading || isRedirecting,
     login,
     register,
     logoutUser,
@@ -156,10 +182,10 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? (
+      {loading || isRedirecting ? (
         <div className="flex h-screen items-center justify-center bg-gray-50">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent"></div>
             <p className="text-gray-600">Loading...</p>
           </div>
         </div>
