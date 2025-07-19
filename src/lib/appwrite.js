@@ -56,7 +56,7 @@ export const COLLECTION_IDS = {
 
 export const USER_ROLES = {
     USER: 'user',
-    PANGKALAN: 'pangkalan' // Konsisten dengan database
+    PANGKALAN: 'pangkalan'
 };
 
 // Service untuk Authentication dengan Role Management
@@ -492,6 +492,7 @@ export const storageService = {
     }
 };
 
+// [PANGKALAN SERVICES TETAP DI SINI]
 export const productsService = {
     // Get all products for pangkalan
     async getProducts(pangkalanId, limit = 50, offset = 0) {
@@ -596,7 +597,7 @@ export const productsService = {
     }
 };
 
-// Orders Service
+// Orders Service (PANGKALAN)
 export const ordersService = {
     // Get all orders for pangkalan
     async getOrders(pangkalanId, status = null, limit = 50, offset = 0) {
@@ -698,7 +699,7 @@ export const ordersService = {
     }
 };
 
-// Drivers Service
+// Drivers Service (PANGKALAN)
 export const driversService = {
     // Get all drivers for pangkalan
     async getDrivers(pangkalanId, limit = 50, offset = 0) {
@@ -808,7 +809,7 @@ export const driversService = {
     }
 };
 
-// Analytics Service
+// Analytics Service (PANGKALAN)
 export const analyticsService = {
     // Get analytics data
     async getAnalytics(pangkalanId, timeRange = '7d') {
