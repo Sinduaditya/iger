@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { authService, appwriteHelpers } from "@/lib/appwrite";
 import { useRouter, usePathname } from "next/navigation";
+import {
+  AUTH_ROUTES,
+  redirectByRole,
+  isProtectedRoute,
+  isAuthRoute,
+} from "@/lib/auth-utils";
 
 const AuthContext = createContext();
 
@@ -26,47 +32,20 @@ export const AuthProvider = ({ children }) => {
       if (isAuth) {
         const currentUser = await authService.getCurrentUser();
         setUser(currentUser);
-        console.log(
-          "👤 User authenticated:",
-          currentUser?.email,
-          "Role:",
-          currentUser?.role,
-        );
 
-        // 🔧 FIX: Hanya redirect dari halaman auth, bukan semua halaman
-        if (pathname === "/login" || pathname === "/register" || pathname === "/") {
-          if (!isRedirecting) {
-            setIsRedirecting(true);
-            
-            switch (currentUser.role) {
-              case "pangkalan":
-                console.log("🎯 Redirecting pangkalan user to dashboard");
-                router.push("/pangkalan/dashboard");
-                break;
-              case "user":
-              default:
-                console.log("🎯 Redirecting user to buyer dashboard");
-                router.push("/buyer/dashboard");
-                break;
-            }
-            
-            // Reset redirect state setelah delay
-            setTimeout(() => setIsRedirecting(false), 1000);
-          }
+        // 🔧 FIX: Gunakan utility functions
+        if (isAuthRoute(pathname) && !isRedirecting) {
+          setIsRedirecting(true);
+          redirectByRole(router, currentUser);
+          setTimeout(() => setIsRedirecting(false), 1000);
         }
       } else {
         setUser(null);
-        console.log("🔒 User not authenticated");
 
-        // 🔧 FIX: Hanya redirect jika benar-benar di protected route
-        const isProtectedRoute =
-          pathname.startsWith("/buyer") ||
-          pathname.startsWith("/pangkalan");
-
-        if (isProtectedRoute && !isRedirecting) {
+        // 🔧 FIX: Gunakan utility
+        if (isProtectedRoute(pathname) && !isRedirecting) {
           setIsRedirecting(true);
-          console.log("🔄 Redirecting to login from protected route");
-          router.push("/login");
+          router.push(AUTH_ROUTES.LOGIN);
           setTimeout(() => setIsRedirecting(false), 1000);
         }
       }
@@ -82,7 +61,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       console.log("🚀 Starting login process for:", email);
-      
+
       await authService.login(email, password);
       const user = await authService.getCurrentUser();
       setUser(user);
@@ -91,7 +70,7 @@ export const AuthProvider = ({ children }) => {
 
       // 🔧 FIX: Tambahkan delay sebelum redirect
       setIsRedirecting(true);
-      
+
       // Redirect berdasarkan role
       switch (user.role) {
         case "pangkalan":
@@ -138,7 +117,7 @@ export const AuthProvider = ({ children }) => {
         fullUser?.email,
         fullUser?.role,
         "Profile created:",
-        fullUser?.profile ? "Yes" : "No"
+        fullUser?.profile ? "Yes" : "No",
       );
 
       return { success: true, user: fullUser };
@@ -159,11 +138,13 @@ export const AuthProvider = ({ children }) => {
       await authService.logout();
       setUser(null);
       console.log("✅ Logout successful");
-      router.push("/login");
+      // 🔧 FIX: Gunakan constant
+      router.push(AUTH_ROUTES.LOGIN);
     } catch (error) {
       console.error("❌ Logout failed:", error);
       setUser(null);
-      router.push("/login");
+      // 🔧 FIX: Gunakan constant
+      router.push(AUTH_ROUTES.LOGIN);
     } finally {
       setIsRedirecting(false);
     }

@@ -138,6 +138,7 @@ export const authService = {
         try {
             await account.deleteSession('current');
             console.log('✅ Logout successful');
+            // 🔧 FIX: Jangan redirect di service, biarkan komponen yang handle
             return true;
         } catch (error) {
             console.error('❌ Logout error:', error);

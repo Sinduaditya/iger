@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 const PangkalanLayout = ({ children }) => {
-    const { user, loading, logoutUser } = useAuth();
+     const { user, loading, logoutUser } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,6 +29,7 @@ const PangkalanLayout = ({ children }) => {
 
     useEffect(() => {
         if (!loading && (!user || user.role !== 'pangkalan')) {
+            // 🔧 FIX: Konsisten ke /login
             router.push('/login');
         }
     }, [user, loading, router]);

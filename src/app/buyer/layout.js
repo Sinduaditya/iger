@@ -4,17 +4,17 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { 
-    Home, 
-    Package, 
-    ShoppingCart, 
-    Heart, 
+import {
+    Home,
+    Package,
+    ShoppingCart,
+    Heart,
     ClipboardList,
     MapPin,
-    History, 
-    User, 
-    Menu, 
-    X, 
+    History,
+    User,
+    Menu,
+    X,
     Bell,
     Settings,
     LogOut,
@@ -41,7 +41,8 @@ const BuyerLayout = ({ children }) => {
             if (!isRedirecting) {
                 setIsRedirecting(true);
                 console.log('🔄 Redirecting to login - no user');
-                router.push('/auth/login');
+                // 🔧 FIX: Konsisten ke /login
+                router.push('/login');
             }
             return;
         }
@@ -62,6 +63,7 @@ const BuyerLayout = ({ children }) => {
         }
 
     }, [user, loading, router, isRedirecting]);
+
 
     useEffect(() => {
         if (user && !loading && !isRedirecting) {
@@ -132,7 +134,7 @@ const BuyerLayout = ({ children }) => {
             '/buyer/profile': 'Profil',
             '/buyer/scan': 'Scan QR'
         };
-        
+
         for (const [route, title] of Object.entries(routes)) {
             if (pathname.startsWith(route)) return title;
         }
@@ -142,9 +144,9 @@ const BuyerLayout = ({ children }) => {
     const menuItems = [
         { href: '/buyer/dashboard', icon: Home, label: 'Dashboard' },
         { href: '/buyer/products', icon: Package, label: 'Produk' },
-        { 
-            href: '/buyer/cart', 
-            icon: ShoppingCart, 
+        {
+            href: '/buyer/cart',
+            icon: ShoppingCart,
             label: 'Keranjang'
         },
         { href: '/buyer/orders', icon: ClipboardList, label: 'Pesanan' },
@@ -160,7 +162,7 @@ const BuyerLayout = ({ children }) => {
             {/* Top Header */}
             <header className="fixed top-0 left-0 right-0 h-16 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-4 z-50 md:pl-68">
                 <div className="flex items-center space-x-3">
-                    <button 
+                    <button
                         onClick={toggleSidebar}
                         className="p-2 rounded-lg hover:bg-gray-100 transition-colors md:hidden"
                     >
@@ -172,10 +174,10 @@ const BuyerLayout = ({ children }) => {
                         </h1>
                     </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-3">
                     {/* Cart Icon (Mobile) */}
-                    <Link 
+                    <Link
                         href="/buyer/cart"
                         className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors relative"
                     >
@@ -192,10 +194,10 @@ const BuyerLayout = ({ children }) => {
                         <Bell size={20} className="text-gray-600" />
                         <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
                     </button>
-                    
+
                     {/* User Menu */}
                     <div className="relative">
-                        <button 
+                        <button
                             onClick={() => setShowUserMenu(!showUserMenu)}
                             className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-colors"
                         >
@@ -206,11 +208,11 @@ const BuyerLayout = ({ children }) => {
                             </div>
                             <ChevronDown size={16} className={`text-gray-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
                         </button>
-                        
+
                         {/* User Dropdown */}
                         {showUserMenu && (
                             <>
-                                <div 
+                                <div
                                     className="fixed inset-0 z-40"
                                     onClick={() => setShowUserMenu(false)}
                                 />
@@ -220,7 +222,7 @@ const BuyerLayout = ({ children }) => {
                                         <p className="text-sm text-gray-600">{user?.email || 'buyer@example.com'}</p>
                                         <p className="text-xs text-orange-600 font-medium">Pembeli</p>
                                     </div>
-                                    <Link 
+                                    <Link
                                         href="/buyer/profile"
                                         className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50"
                                         onClick={() => setShowUserMenu(false)}
@@ -228,7 +230,7 @@ const BuyerLayout = ({ children }) => {
                                         <Settings size={16} className="mr-3" />
                                         Pengaturan
                                     </Link>
-                                    <button 
+                                    <button
                                         onClick={handleLogout}
                                         className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-red-50"
                                     >
@@ -244,7 +246,7 @@ const BuyerLayout = ({ children }) => {
 
             {/* Sidebar Overlay */}
             {isSidebarOpen && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
                     onClick={toggleSidebar}
                 />
@@ -268,7 +270,7 @@ const BuyerLayout = ({ children }) => {
                                 <p className="text-xs text-gray-600">Buyer Panel</p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             onClick={toggleSidebar}
                             className="p-1 rounded hover:bg-gray-100 md:hidden"
                         >
@@ -282,15 +284,15 @@ const BuyerLayout = ({ children }) => {
                     {menuItems.map((item) => {
                         const Icon = item.icon;
                         const active = isActiveRoute(item.href);
-                        
+
                         return (
-                            <Link 
+                            <Link
                                 key={item.href}
-                                href={item.href} 
+                                href={item.href}
                                 className={`
                                     flex items-center justify-between p-3 rounded-lg transition-all duration-200 group
-                                    ${active 
-                                        ? 'bg-orange-50 text-orange-700 border-r-2 border-orange-700' 
+                                    ${active
+                                        ? 'bg-orange-50 text-orange-700 border-r-2 border-orange-700'
                                         : 'text-gray-700 hover:bg-gray-50'
                                     }
                                 `}
