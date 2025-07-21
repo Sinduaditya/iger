@@ -19,7 +19,8 @@ import {
     Settings,
     LogOut,
     ChevronDown,
-    ScanLine
+    ScanLine,
+    Fish
 } from 'lucide-react';
 import { cartService } from '@/lib/buyer-services';
 import { ChatAssistant } from '@/components/shared/ChatAssistant';
@@ -197,41 +198,32 @@ const BuyerLayout = ({ children }) => {
 
                     {/* User Menu */}
                     <div className="relative">
-                        <button
+                        <button 
                             onClick={() => setShowUserMenu(!showUserMenu)}
                             className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-colors"
                         >
-                            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                            <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
                                 <span className="text-white text-sm font-medium">
-                                    {user?.name?.charAt(0)?.toUpperCase() || 'B'}
+                                    {user?.name?.charAt(0)?.toUpperCase() || 'P'}
                                 </span>
                             </div>
                             <ChevronDown size={16} className={`text-gray-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
                         </button>
-
+                        
                         {/* User Dropdown */}
                         {showUserMenu && (
                             <>
-                                <div
+                                <div 
                                     className="fixed inset-0 z-40"
                                     onClick={() => setShowUserMenu(false)}
                                 />
                                 <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                                     <div className="px-4 py-2 border-b border-gray-100">
                                         <p className="font-medium text-gray-800">{user?.name || 'Buyer'}</p>
-                                        <p className="text-sm text-gray-600">{user?.email || 'buyer@example.com'}</p>
-                                        <p className="text-xs text-orange-600 font-medium">Pembeli</p>
+                                        <p className="text-sm text-gray-600">Pembeli</p>
                                     </div>
-                                    <Link
-                                        href="/buyer/profile"
-                                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50"
-                                        onClick={() => setShowUserMenu(false)}
-                                    >
-                                        <Settings size={16} className="mr-3" />
-                                        Pengaturan
-                                    </Link>
-                                    <button
-                                        onClick={handleLogout}
+                                    <button 
+                                        onClick={logoutUser}
                                         className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-red-50"
                                     >
                                         <LogOut size={16} className="mr-3" />
@@ -261,13 +253,13 @@ const BuyerLayout = ({ children }) => {
                 {/* Sidebar Header */}
                 <div className="p-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-sm">🐟</span>
+                       <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center">
+                                <Fish className="w-5 h-5 text-white" />
                             </div>
                             <div>
                                 <h2 className="text-lg font-bold text-gray-800">IGER</h2>
-                                <p className="text-xs text-gray-600">Buyer Panel</p>
+                                <p className="text-sm text-gray-600">Dashboard</p>
                             </div>
                         </div>
                         <button
@@ -315,11 +307,11 @@ const BuyerLayout = ({ children }) => {
 
                 {/* Sidebar Footer */}
                 <div className="absolute bottom-4 left-4 right-4">
-                    <div className="p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg mb-3">
+                    <div className="p-3 bg-gray-50 rounded-lg mb-3">
                         <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
                                 <span className="text-white font-medium">
-                                    {user?.name?.charAt(0)?.toUpperCase() || 'B'}
+                                    {user?.name?.charAt(0)?.toUpperCase() || 'P'}
                                 </span>
                             </div>
                             <div className="flex-1 min-w-0">

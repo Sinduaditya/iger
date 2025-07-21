@@ -13,6 +13,125 @@ const BUYER_ADDRESSES_COLLECTION_ID = process.env.NEXT_PUBLIC_BUYER_ADDRESSES_CO
 // Buyer Products Service
 export const buyerService = {
     // Get all products from all pangkalans
+     async getPangkalansWithLocation() {
+        try {
+            // Get all user profiles yang role-nya pangkalan dan punya koordinat
+            const pangkalans = await databases.listDocuments(
+                DATABASE_ID,
+                '68758ae900139830951d', // Collection user_profiles
+                [
+                    Query.equal('role', 'pangkalan'),
+                    Query.limit(100)
+                ]
+            );
+
+            // Filter pangkalan yang punya produk dan koordinat
+            const pangkalansWithData = await Promise.all(
+                pangkalans.documents.map(async (pangkalan) => {
+                    try {
+                        // Get products count for this pangkalan
+                        const products = await databases.listDocuments(
+                            DATABASE_ID,
+                            PANGKALAN_PRODUCTS_COLLECTION_ID,
+                            [
+                                Query.equal('pangkalan_id', pangkalan.user_id),
+                                Query.equal('is_available', true),
+                                Query.limit(1) // Just for count
+                            ]
+                        );
+
+                        // Get any product with coordinates for this pangkalan if user profile doesn't have coordinates
+                        let latitude = pangkalan.latitude;
+                        let longitude = pangkalan.longitude;
+
+                        if (!latitude || !longitude) {
+                            const productWithLocation = await databases.listDocuments(
+                                DATABASE_ID,
+                                PANGKALAN_PRODUCTS_COLLECTION_ID,
+                                [
+                                    Query.equal('pangkalan_id', pangkalan.user_id),
+                                    Query.isNotNull('latitude'),
+                                    Query.isNotNull('longitude'),
+                                    Query.limit(1)
+                                ]
+                            );
+
+                            if (productWithLocation.documents.length > 0) {
+                                latitude = productWithLocation.documents[0].latitude;
+                                longitude = productWithLocation.documents[0].longitude;
+                            }
+                        }
+
+                        return {
+                            user_id: pangkalan.user_id,
+                            pangkalan_name: pangkalan.pangkalan_name,
+                            address: pangkalan.address,
+                            phone: pangkalan.phone,
+                            operating_hours: pangkalan.operating_hours,
+                            latitude: latitude,
+                            longitude: longitude,
+                            product_count: products.total
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching data for pangkalan ${pangkalan.user_id}:`, error);
+                        return null;
+                    }
+                })
+            );
+
+            // Filter out null results and pangkalans without location or products
+            return pangkalansWithData.filter(pangkalan => 
+                pangkalan && 
+                pangkalan.latitude && 
+                pangkalan.longitude && 
+                pangkalan.product_count > 0
+            );
+        } catch (error) {
+            console.error('Error fetching pangkalans with location:', error);
+            return [];
+        }
+    },
+
+    // Get pangkalan detail by user_id
+    async getPangkalanDetail(pangkalanId) {
+        try {
+            const pangkalan = await databases.listDocuments(
+                DATABASE_ID,
+                '68758ae900139830951d',
+                [
+                    Query.equal('user_id', pangkalanId),
+                    Query.equal('role', 'pangkalan'),
+                    Query.limit(1)
+                ]
+            );
+
+            if (pangkalan.documents.length === 0) {
+                return null;
+            }
+
+            const pangkalanData = pangkalan.documents[0];
+
+            // Get products count
+            const products = await databases.listDocuments(
+                DATABASE_ID,
+                PANGKALAN_PRODUCTS_COLLECTION_ID,
+                [
+                    Query.equal('pangkalan_id', pangkalanId),
+                    Query.equal('is_available', true),
+                    Query.limit(1)
+                ]
+            );
+
+            return {
+                ...pangkalanData,
+                product_count: products.total
+            };
+        } catch (error) {
+            console.error('Error fetching pangkalan detail:', error);
+            return null;
+        }
+    },
+
     async getAllProducts(filters = {}, limit = 50, offset = 0) {
         try {
             const queries = [
@@ -166,38 +285,44 @@ export const cartService = {
     },
 
     // Update cart item quantity
-    async updateCartItem(cartItemId, quantity, unitPrice) {
+    async updateCartItem(cartItemId, quantity, totalPrice) {
         try {
+            console.log(`Updating cart item ${cartItemId}: quantity=${quantity}, total=${totalPrice}`);
+            
             const response = await databases.updateDocument(
                 DATABASE_ID,
                 CART_COLLECTION_ID,
                 cartItemId,
                 {
-                    quantity: quantity, // ✅ Fixed: quantity (bukan quantitiy)
-                    unit_price: unitPrice, // ✅ Fixed: unit_price (bukan unite_price)
-                    total_price: quantity * unitPrice,
-                    updated_at: new Date().toISOString()
+                    quantity: parseInt(quantity),
+                    total_price: parseFloat(totalPrice)
                 }
             );
+
+            console.log('Cart item updated successfully:', response);
             return response;
         } catch (error) {
             console.error('Error updating cart item:', error);
-            throw error;
+            throw new Error(`Failed to update cart item: ${error.message}`);
         }
     },
 
-    // Remove from cart
+    // 🔥 IMPROVED: Remove from cart with better error handling
     async removeFromCart(cartItemId) {
         try {
-            await databases.deleteDocument(
+            console.log(`Removing cart item: ${cartItemId}`);
+            
+            const response = await databases.deleteDocument(
                 DATABASE_ID,
                 CART_COLLECTION_ID,
                 cartItemId
             );
-            return true;
+
+            console.log('Cart item removed successfully');
+            return response;
         } catch (error) {
-            console.error('Error removing from cart:', error);
-            return false;
+            console.error('Error removing cart item:', error);
+            throw new Error(`Failed to remove cart item: ${error.message}`);
         }
     },
 
@@ -428,6 +553,79 @@ export const buyerOrdersService = {
             console.error('Error creating order items:', error);
             console.error('Error details:', error.message);
             throw error;
+        }
+    },
+
+    async submitDriverRating(orderId, driverId, rating, comment = '') {
+        try {
+            // Create driver rating record
+            const ratingData = {
+                order_id: orderId,
+                driver_id: driverId,
+                rating: parseFloat(rating),
+                comment: comment,
+                rated_at: new Date().toISOString()
+            };
+
+            const ratingResponse = await databases.createDocument(
+                DATABASE_ID,
+                'driver_ratings', // Collection untuk rating driver
+                ID.unique(),
+                ratingData
+            );
+
+            // Update order dengan flag rating sudah diberikan
+            await databases.updateDocument(
+                DATABASE_ID,
+                ORDERS_COLLECTION_ID,
+                orderId,
+                {
+                    driver_rated: true
+                }
+            );
+
+            // Update average rating driver
+            await this.updateDriverAverageRating(driverId);
+
+            return ratingResponse;
+        } catch (error) {
+            console.error('Error submitting driver rating:', error);
+            throw error;
+        }
+    },
+
+    // 🔥 NEW: Update driver average rating
+    async updateDriverAverageRating(driverId) {
+        try {
+            // Get all ratings for this driver
+            const ratings = await databases.listDocuments(
+                DATABASE_ID,
+                'driver_ratings',
+                [
+                    Query.equal('driver_id', driverId),
+                    Query.limit(1000)
+                ]
+            );
+
+            if (ratings.documents.length > 0) {
+                const totalRating = ratings.documents.reduce((sum, rating) => sum + rating.rating, 0);
+                const averageRating = totalRating / ratings.documents.length;
+
+                // Update driver record
+                await databases.updateDocument(
+                    DATABASE_ID,
+                    'drivers', // Collection drivers
+                    driverId,
+                    {
+                        rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+                        total_ratings: ratings.documents.length
+                    }
+                );
+
+                console.log(`✅ Driver ${driverId} rating updated to ${averageRating.toFixed(1)}`);
+            }
+        } catch (error) {
+            console.error('Error updating driver average rating:', error);
         }
     },
 

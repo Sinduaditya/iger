@@ -94,13 +94,7 @@ const PangkalanLayout = ({ children }) => {
                     </div>
                 </div>
                 
-                <div className="flex items-center space-x-3">
-                    {/* Notification */}
-                    <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
-                        <Bell size={20} className="text-gray-600" />
-                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-                    </button>
-                    
+                <div className="flex items-center space-x-3"> 
                     {/* User Menu */}
                     <div className="relative">
                         <button 
@@ -127,14 +121,6 @@ const PangkalanLayout = ({ children }) => {
                                         <p className="font-medium text-gray-800">{user?.name || 'Pangkalan Owner'}</p>
                                         <p className="text-sm text-gray-600">Pangkalan Owner</p>
                                     </div>
-                                    <Link 
-                                        href="/pangkalan/settings"
-                                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50"
-                                        onClick={() => setShowUserMenu(false)}
-                                    >
-                                        <Settings size={16} className="mr-3" />
-                                        Pengaturan
-                                    </Link>
                                     <button 
                                         onClick={logoutUser}
                                         className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-red-50"
