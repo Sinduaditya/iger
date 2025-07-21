@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Edit, Trash2, Package, X, MapPin } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Package, X, MapPin, Loader, Navigation } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { productsService, pangkalanHelpers } from '@/lib/pangkalan-service';
+import { geocodingUtils } from '@/utils/geocoding';
 
 export default function ProductsPage() {
     const { user } = useAuth();
@@ -16,6 +17,13 @@ export default function ProductsPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
+    
+    // State untuk geocoding
+    const [addressLoading, setAddressLoading] = useState(false);
+    const [currentAddress, setCurrentAddress] = useState('');
+    const [gettingLocation, setGettingLocation] = useState(false);
+    const [addressCache, setAddressCache] = useState({}); // Cache untuk alamat yang sudah di-fetch
+    
     const [formData, setFormData] = useState({
         name: '',
         category: '',
@@ -36,6 +44,7 @@ export default function ProductsPage() {
         }
     }, [user]);
 
+    // Load data dan cache alamat untuk produk yang ada
     const loadData = async () => {
         try {
             setLoading(true);
@@ -46,10 +55,125 @@ export default function ProductsPage() {
             
             setProducts(productsData.documents);
             setStats(statsData);
+
+            // Pre-load alamat untuk produk yang memiliki koordinat
+            await loadAddressesForProducts(productsData.documents);
         } catch (error) {
             console.error('Error loading products:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Load alamat untuk semua produk yang memiliki koordinat
+    const loadAddressesForProducts = async (products) => {
+        const newCache = { ...addressCache };
+        
+        for (const product of products) {
+            if (product.latitude && product.longitude && geocodingUtils.isValidCoordinate(product.latitude, product.longitude)) {
+                const key = `${product.latitude},${product.longitude}`;
+                
+                if (!newCache[key]) {
+                    try {
+                        const addressData = await geocodingUtils.reverseGeocode(product.latitude, product.longitude);
+                        newCache[key] = addressData.formatted_address;
+                    } catch (error) {
+                        console.error('Error loading address for product:', product.name, error);
+                        newCache[key] = `${product.latitude}, ${product.longitude}`;
+                    }
+                }
+            }
+        }
+        
+        setAddressCache(newCache);
+    };
+
+    // Get alamat dari koordinat untuk form
+    const getAddressFromCoordinates = async (lat, lng) => {
+        if (!lat || !lng || !geocodingUtils.isValidCoordinate(lat, lng)) {
+            setCurrentAddress('');
+            return;
+        }
+
+        const key = `${lat},${lng}`;
+        
+        // Check cache first
+        if (addressCache[key]) {
+            setCurrentAddress(addressCache[key]);
+            return;
+        }
+
+        setAddressLoading(true);
+        try {
+            const addressData = await geocodingUtils.reverseGeocode(lat, lng);
+            setCurrentAddress(addressData.formatted_address);
+            
+            // Update cache
+            setAddressCache(prev => ({
+                ...prev,
+                [key]: addressData.formatted_address
+            }));
+        } catch (error) {
+            console.error('Error getting address:', error);
+            setCurrentAddress(`${lat}, ${lng}`);
+        } finally {
+            setAddressLoading(false);
+        }
+    };
+
+    // Get current location
+    const getCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            alert('Geolocation tidak didukung browser ini');
+            return;
+        }
+
+        setGettingLocation(true);
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                setFormData(prev => ({
+                    ...prev,
+                    latitude: latitude.toString(),
+                    longitude: longitude.toString()
+                }));
+                
+                // Get address untuk koordinat saat ini
+                getAddressFromCoordinates(latitude, longitude);
+                setGettingLocation(false);
+            },
+            (error) => {
+                console.error('Error getting location:', error);
+                alert('Gagal mendapatkan lokasi. Pastikan GPS aktif dan izinkan akses lokasi.');
+                setGettingLocation(false);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 600000
+            }
+        );
+    };
+
+    // Handle perubahan koordinat di form
+    const handleCoordinateChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+
+        // Auto-fetch address when both coordinates are filled
+        if (field === 'latitude') {
+            const lng = formData.longitude;
+            if (lng && geocodingUtils.isValidCoordinate(value, lng)) {
+                getAddressFromCoordinates(value, lng);
+            }
+        } else if (field === 'longitude') {
+            const lat = formData.latitude;
+            if (lat && geocodingUtils.isValidCoordinate(lat, value)) {
+                getAddressFromCoordinates(lat, value);
+            }
         }
     };
 
@@ -69,6 +193,13 @@ export default function ProductsPage() {
                 longitude: product.longitude ? product.longitude.toString() : '',
                 is_available: product.is_available
             });
+
+            // Load address jika ada koordinat
+            if (product.latitude && product.longitude) {
+                getAddressFromCoordinates(product.latitude, product.longitude);
+            } else {
+                setCurrentAddress('');
+            }
         } else {
             setEditingProduct(null);
             setFormData({
@@ -84,6 +215,7 @@ export default function ProductsPage() {
                 longitude: '',
                 is_available: true
             });
+            setCurrentAddress('');
         }
         setShowModal(true);
     };
@@ -91,6 +223,7 @@ export default function ProductsPage() {
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingProduct(null);
+        setCurrentAddress('');
         setFormData({
             name: '',
             category: '',
@@ -159,6 +292,13 @@ export default function ProductsPage() {
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Helper function untuk get alamat dari cache
+    const getProductAddress = (product) => {
+        if (!product.latitude || !product.longitude) return null;
+        const key = `${product.latitude},${product.longitude}`;
+        return addressCache[key] || `${product.latitude}, ${product.longitude}`;
+    };
 
     if (loading) {
         return (
@@ -296,12 +436,15 @@ export default function ProductsPage() {
                                         </span>
                                     )}
                                 </div>
+                                
+                                {/* Tampilkan alamat jika ada koordinat */}
                                 {(product.latitude && product.longitude) && (
-                                    <div className="flex items-center gap-1 text-xs text-gray-600">
-                                        <MapPin className="w-3 h-3" />
-                                        <span>{product.latitude.toFixed(4)}, {product.longitude.toFixed(4)}</span>
+                                    <div className="flex items-start gap-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-md">
+                                        <MapPin className="w-4 h-4 mt-0.5 text-orange-600 flex-shrink-0" />
+                                        <span className="line-clamp-2">{getProductAddress(product)}</span>
                                     </div>
                                 )}
+                                
                                 {product.description && (
                                     <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
                                 )}
@@ -349,7 +492,7 @@ export default function ProductsPage() {
 
             {/* Modal Add/Edit Product */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0  bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between p-6 border-b">
                             <h2 className="text-xl font-semibold">
@@ -434,26 +577,71 @@ export default function ProductsPage() {
                                         <option value="Kurang Segar">Kurang Segar</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Latitude</label>
-                                    <Input
-                                        type="number"
-                                        step="any"
-                                        value={formData.latitude}
-                                        onChange={(e) => setFormData({...formData, latitude: e.target.value})}
-                                        placeholder="-6.2088"
-                                    />
+                            </div>
+
+                            {/* Location Section */}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-medium">Lokasi Produk</h3>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={getCurrentLocation}
+                                        disabled={gettingLocation}
+                                        className="flex items-center gap-2"
+                                    >
+                                        {gettingLocation ? (
+                                            <Loader className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <Navigation className="w-4 h-4" />
+                                        )}
+                                        Lokasi Saat Ini
+                                    </Button>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Longitude</label>
-                                    <Input
-                                        type="number"
-                                        step="any"
-                                        value={formData.longitude}
-                                        onChange={(e) => setFormData({...formData, longitude: e.target.value})}
-                                        placeholder="106.8456"
-                                    />
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium mb-2">Latitude</label>
+                                        <Input
+                                            type="number"
+                                            step="any"
+                                            value={formData.latitude}
+                                            onChange={(e) => handleCoordinateChange('latitude', e.target.value)}
+                                            placeholder="-6.2088"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-2">Longitude</label>
+                                        <Input
+                                            type="number"
+                                            step="any"
+                                            value={formData.longitude}
+                                            onChange={(e) => handleCoordinateChange('longitude', e.target.value)}
+                                            placeholder="106.8456"
+                                        />
+                                    </div>
                                 </div>
+
+                                {/* Address Display */}
+                                {(formData.latitude && formData.longitude) && (
+                                    <div className="p-4 bg-gray-50 rounded-lg border">
+                                        <div className="flex items-start gap-3">
+                                            <MapPin className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium text-gray-900 mb-1">Alamat:</p>
+                                                {addressLoading ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <Loader className="w-4 h-4 animate-spin text-orange-600" />
+                                                        <span className="text-sm text-gray-600">Mengambil alamat...</span>
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-sm text-gray-700">{currentAddress || 'Alamat tidak ditemukan'}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             
                             <div>

@@ -123,10 +123,10 @@ export default function LoginPage() {
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
             <div className="grid lg:grid-cols-2 min-h-screen">
                 {/* Left Panel - Info Section */}
-                <div className={`hidden lg:flex flex-col justify-center px-12 bg-gradient-to-br ${user?.role ? theme.gradient : 'from-blue-50 to-indigo-100'}`}>
+                <div className={`hidden lg:flex flex-col justify-center px-12 py-8 bg-gradient-to-br ${user?.role ? theme.gradient : 'from-blue-50 to-indigo-100'}`}>
                     <div className="max-w-md">
                         {/* Logo & Brand */}
-                        <div className="flex items-center mb-8">
+                        <div className="flex items-center mb-10">
                             <div className={`inline-flex items-center justify-center w-16 h-16 ${user?.role ? theme.primary : 'bg-blue-600'} rounded-2xl mr-4`}>
                                 <Fish className="w-8 h-8 text-white" />
                             </div>
@@ -137,8 +137,8 @@ export default function LoginPage() {
                         </div>
 
                         {/* Features */}
-                        <div className="space-y-6">
-                            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                        <div className="space-y-8">
+                            <h2 className="text-2xl font-semibold text-gray-900 mb-8">
                                 {user?.role === 'pangkalan' ? 'Untuk Pemilik Pangkalan' : 
                                  user?.role === 'user' ? 'Untuk Pembeli Ikan' : 
                                  'Platform Terpercaya'}
@@ -150,26 +150,26 @@ export default function LoginPage() {
                                         <feature.icon className={`w-6 h-6 ${user?.role ? theme.icon : 'text-blue-600'}`} />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
-                                        <p className="text-gray-600 text-sm">{feature.desc}</p>
+                                        <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                                        <p className="text-gray-600 text-sm leading-relaxed">{feature.desc}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Stats */}
-                        <div className="mt-12 grid grid-cols-3 gap-6">
+                        <div className="mt-16 grid grid-cols-3 gap-6">
                             <div className="text-center">
                                 <div className="text-2xl font-bold text-gray-900">50+</div>
-                                <div className="text-sm text-gray-600">Pangkalan</div>
+                                <div className="text-sm text-gray-600 mt-1">Pangkalan</div>
                             </div>
                             <div className="text-center">
                                 <div className="text-2xl font-bold text-gray-900">1000+</div>
-                                <div className="text-sm text-gray-600">Pembeli</div>
+                                <div className="text-sm text-gray-600 mt-1">Pembeli</div>
                             </div>
                             <div className="text-center">
                                 <div className="text-2xl font-bold text-gray-900">5000+</div>
-                                <div className="text-sm text-gray-600">Pesanan</div>
+                                <div className="text-sm text-gray-600 mt-1">Pesanan</div>
                             </div>
                         </div>
                     </div>
@@ -177,15 +177,15 @@ export default function LoginPage() {
 
                 {/* Right Panel - Login Form */}
                 <div className="flex flex-col justify-center px-6 py-12 lg:px-12">
-                    <div className="w-full max-w-sm mx-auto">
+                    <div className="w-full max-w-sm mx-auto space-y-6">
                         
                         {/* Mobile Logo */}
-                        <div className="lg:hidden text-center mb-8">
+                        <div className="lg:hidden text-center mb-10">
                             <div className={`inline-flex items-center justify-center w-16 h-16 ${user?.role ? theme.primary : 'bg-blue-600'} rounded-2xl mb-4`}>
                                 <Fish className="w-8 h-8 text-white" />
                             </div>
                             <h1 className="text-2xl font-bold text-gray-900">IGER</h1>
-                            <p className="text-gray-600">Pasar Ikan Digital</p>
+                            <p className="text-gray-600 mt-1">Pasar Ikan Digital</p>
                         </div>
 
                         {/* Active Session Alert */}
@@ -219,8 +219,8 @@ export default function LoginPage() {
 
                         {/* Login Form */}
                         <Card className="border-0 shadow-xl">
-                            <CardHeader className="text-center pb-4">
-                                <CardTitle className="text-2xl font-bold text-gray-900">
+                            <CardHeader className="text-center pb-6">
+                                <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
                                     {user ? 'Login dengan Akun Lain' : 'Selamat Datang!'}
                                 </CardTitle>
                                 <CardDescription className="text-gray-600">
@@ -228,20 +228,20 @@ export default function LoginPage() {
                                 </CardDescription>
                             </CardHeader>
 
-                            <CardContent>
+                            <CardContent className="px-6">
                                 <Form {...form}>
-                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                                         <FormField
                                             control={form.control}
                                             name="email"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Email</FormLabel>
+                                                    <FormLabel className="text-sm font-medium">Email</FormLabel>
                                                     <FormControl>
                                                         <Input 
                                                             type="email"
                                                             placeholder="email@contoh.com" 
-                                                            className="h-11"
+                                                            className="h-11 mt-2"
                                                             {...field} 
                                                         />
                                                     </FormControl>
@@ -254,12 +254,12 @@ export default function LoginPage() {
                                             name="password"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Password</FormLabel>
+                                                    <FormLabel className="text-sm font-medium">Password</FormLabel>
                                                     <FormControl>
                                                         <Input 
                                                             type="password" 
                                                             placeholder="••••••••" 
-                                                            className="h-11"
+                                                            className="h-11 mt-2"
                                                             {...field} 
                                                         />
                                                     </FormControl>
@@ -269,7 +269,7 @@ export default function LoginPage() {
                                         />
                                         <Button 
                                             type="submit" 
-                                            className={`w-full h-11 ${user?.role ? theme.primary : 'bg-blue-600 hover:bg-blue-700'}`}
+                                            className={`w-full h-11 mt-6 ${user?.role ? theme.primary : 'bg-blue-600 hover:bg-blue-700'}`}
                                             disabled={isLoading}
                                         >
                                             {isLoading ? "Masuk..." : "Masuk"}
@@ -278,7 +278,7 @@ export default function LoginPage() {
                                 </Form>
                             </CardContent>
 
-                            <CardFooter className="text-center text-sm">
+                            <CardFooter className="text-center text-sm pt-4 px-6">
                                 <p className="text-gray-600 w-full">
                                     Belum punya akun?{' '}
                                     <button 
@@ -292,23 +292,23 @@ export default function LoginPage() {
                         </Card>
 
                         {/* Mobile Features Preview */}
-                        <div className="lg:hidden mt-8">
-                            <div className="text-center mb-6">
+                        <div className="lg:hidden mt-10">
+                            <div className="text-center mb-8">
                                 <h3 className="font-semibold text-gray-900">Platform Terpercaya</h3>
-                                <p className="text-sm text-gray-600">Menghubungkan pangkalan dan pembeli</p>
+                                <p className="text-sm text-gray-600 mt-1">Menghubungkan pangkalan dan pembeli</p>
                             </div>
-                            <div className="grid grid-cols-3 gap-4 text-center">
+                            <div className="grid grid-cols-3 gap-6 text-center">
                                 <div>
                                     <div className="text-xl font-bold text-gray-900">50+</div>
-                                    <div className="text-xs text-gray-600">Pangkalan</div>
+                                    <div className="text-xs text-gray-600 mt-1">Pangkalan</div>
                                 </div>
                                 <div>
                                     <div className="text-xl font-bold text-gray-900">1000+</div>
-                                    <div className="text-xs text-gray-600">Pembeli</div>
+                                    <div className="text-xs text-gray-600 mt-1">Pembeli</div>
                                 </div>
                                 <div>
                                     <div className="text-xl font-bold text-gray-900">5000+</div>
-                                    <div className="text-xs text-gray-600">Pesanan</div>
+                                    <div className="text-xs text-gray-600 mt-1">Pesanan</div>
                                 </div>
                             </div>
                         </div>
@@ -320,19 +320,19 @@ export default function LoginPage() {
             {showRoleModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in-0 duration-200">
                     <Card className="w-full max-w-md shadow-xl border-0 animate-in zoom-in-95 duration-200">
-                        <CardHeader className="text-center pb-4">
-                            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full mb-3">
+                        <CardHeader className="text-center pb-6">
+                            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full mb-4">
                                 <Fish className="w-6 h-6 text-white" />
                             </div>
-                            <CardTitle className="text-xl">Pilih Jenis Akun</CardTitle>
+                            <CardTitle className="text-xl mb-2">Pilih Jenis Akun</CardTitle>
                             <CardDescription className="text-gray-500">
                                 Ingin mendaftar sebagai apa?
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-3 px-6">
+                        <CardContent className="space-y-4 px-6">
                             <Link href="/register?role=pangkalan">
                                 <Button 
-                                    className="w-full bg-blue-600 hover:bg-blue-700 h-14 text-base font-medium group"
+                                    className="w-full bg-blue-600 hover:bg-blue-700 h-16 text-base font-medium group"
                                     onClick={() => setShowRoleModal(false)}
                                 >
                                     <div className="flex items-center justify-between w-full">
@@ -340,7 +340,7 @@ export default function LoginPage() {
                                             <Store className="w-5 h-5 mr-3" />
                                             <div className="text-left">
                                                 <div>Pemilik Pangkalan</div>
-                                                <div className="text-xs text-blue-100">Jual ikan online</div>
+                                                <div className="text-xs text-blue-100 mt-1">Jual ikan online</div>
                                             </div>
                                         </div>
                                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -350,7 +350,7 @@ export default function LoginPage() {
                             <Link href="/register?role=user">
                                 <Button 
                                     variant="outline" 
-                                    className="w-full h-14 text-base font-medium border-2 hover:bg-orange-50 hover:border-orange-200 group"
+                                    className="w-full h-16 text-base font-medium border-2 hover:bg-orange-50 hover:border-orange-200 group"
                                     onClick={() => setShowRoleModal(false)}
                                 >
                                     <div className="flex items-center justify-between w-full">
@@ -358,7 +358,7 @@ export default function LoginPage() {
                                             <Fish className="w-5 h-5 mr-3 text-orange-600" />
                                             <div className="text-left">
                                                 <div className="text-gray-900">Pembeli Ikan</div>
-                                                <div className="text-xs text-gray-500">Beli ikan segar</div>
+                                                <div className="text-xs text-gray-500 mt-1">Beli ikan segar</div>
                                             </div>
                                         </div>
                                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-orange-600" />
@@ -366,7 +366,7 @@ export default function LoginPage() {
                                 </Button>
                             </Link>
                         </CardContent>
-                        <CardFooter className="pt-2 px-6">
+                        <CardFooter className="pt-4 px-6">
                             <Button 
                                 variant="ghost" 
                                 className="w-full text-gray-500 hover:text-gray-700"

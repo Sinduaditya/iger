@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Fish, Calendar, Search, Trash2, Loader, MapPin } from 'lucide-react';
+import { Fish, Calendar, Search, Trash2, Loader, MapPin, Filter, BarChart3, TrendingUp, Archive, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { scanResultsService } from '@/lib/appwrite';
 import { toast } from 'sonner';
@@ -45,7 +45,6 @@ export default function HistoryPage() {
     const filterHistory = () => {
         let filtered = scanHistory;
 
-        // Filter berdasarkan pencarian
         if (searchTerm) {
             filtered = filtered.filter(item => 
                 item.freshness.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -55,7 +54,6 @@ export default function HistoryPage() {
             );
         }
 
-        // Filter berdasarkan tingkat kesegaran
         if (selectedFilter !== 'all') {
             filtered = filtered.filter(item => 
                 item.freshness.toLowerCase().replace(' ', '_') === selectedFilter
@@ -70,7 +68,6 @@ export default function HistoryPage() {
             setDeleting(true);
             await scanResultsService.deleteScanResult(documentId);
             
-            // Update local state
             const updatedHistory = scanHistory.filter(item => item.$id !== documentId);
             setScanHistory(updatedHistory);
             
@@ -103,11 +100,16 @@ export default function HistoryPage() {
 
     const getBadgeColor = (freshness) => {
         switch (freshness) {
-            case 'Sangat Segar': return 'bg-emerald-500 text-white';
-            case 'Cukup Segar': return 'bg-yellow-500 text-white';
-            case 'Kurang Segar': return 'bg-[#F37125] text-white';
-            case 'Tidak Segar': return 'bg-red-500 text-white';
-            default: return 'bg-gray-500 text-white';
+            case 'Sangat Segar': 
+                return 'bg-green-600 text-white border-green-600';
+            case 'Cukup Segar': 
+                return 'bg-yellow-500 text-white border-yellow-500';
+            case 'Kurang Segar': 
+                return 'bg-orange-600 text-white border-orange-600';
+            case 'Tidak Segar': 
+                return 'bg-red-600 text-white border-red-600';
+            default: 
+                return 'bg-gray-600 text-white border-gray-600';
         }
     };
 
@@ -123,76 +125,131 @@ export default function HistoryPage() {
     };
 
     const filterOptions = [
-        { value: 'all', label: 'Semua Hasil' },
-        { value: 'sangat_segar', label: 'Sangat Segar' },
-        { value: 'cukup_segar', label: 'Cukup Segar' },
-        { value: 'kurang_segar', label: 'Kurang Segar' },
-        { value: 'tidak_segar', label: 'Tidak Segar' }
+        { value: 'all', label: 'Semua Hasil', icon: Archive },
+        { value: 'sangat_segar', label: 'Sangat Segar', icon: CheckCircle2 },
+        { value: 'cukup_segar', label: 'Cukup Segar', icon: TrendingUp },
+        { value: 'kurang_segar', label: 'Kurang Segar', icon: BarChart3 },
+        { value: 'tidak_segar', label: 'Tidak Segar', icon: Archive }
     ];
+
+    // Statistics calculation
+    const stats = {
+        total: scanHistory.length,
+        sangatSegar: scanHistory.filter(item => item.freshness === 'Sangat Segar').length,
+        cukupSegar: scanHistory.filter(item => item.freshness === 'Cukup Segar').length,
+        kurangSegar: scanHistory.filter(item => ['Kurang Segar', 'Tidak Segar'].includes(item.freshness)).length
+    };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
-                    <Loader className="mx-auto h-12 w-12 text-[#125F95] animate-spin mb-4" />
-                    <p className="text-[#0D253C]">Memuat riwayat scan...</p>
+                    <Loader className="mx-auto h-16 w-16 text-orange-600 animate-spin mb-4" />
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Memuat Riwayat</h3>
+                    <p className="text-gray-600">Mengambil data scan Anda...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#F4F6F8]">
-            {/* Header Section */}
-            <div className="bg-[#0D253C] text-white p-6 rounded-b-3xl shadow-lg mb-6">
-                <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[#125F95] rounded-full mb-4">
-                        <Fish className="w-8 h-8 text-white" />
+        <div className="min-h-screen bg-gray-50">
+            {/* Clean Header */}
+            <div className="bg-white border-b border-gray-200 shadow-sm">
+                <div className="max-w-6xl mx-auto px-6 py-12">
+                    <div className="text-center">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-orange-600 rounded-xl shadow-lg mb-6">
+                            <Archive className="w-10 h-10 text-white" />
+                        </div>
+                        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                            Riwayat Scan Ikan
+                        </h1>
+                        <p className="text-xl text-gray-600">
+                            Lihat semua hasil analisis AI yang pernah Anda lakukan
+                        </p>
                     </div>
-                    <h1 className="text-2xl font-bold mb-2">Riwayat Scan Ikan</h1>
-                    <p className="text-[#F4F6F8] text-sm">
-                        Lihat hasil analisis ikan yang pernah Anda lakukan
-                    </p>
                 </div>
             </div>
 
-            <div className="px-4 pb-8">
-                <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-6xl mx-auto px-4 py-8">
+                <div className="space-y-8">
+                    {/* Statistics Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <Card className="shadow-lg border-0 bg-orange-600 text-white">
+                            <CardContent className="p-6 text-center">
+                                <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-4 mx-auto">
+                                    <BarChart3 className="w-6 h-6" />
+                                </div>
+                                <div className="text-3xl font-bold">{stats.total}</div>
+                                <div className="text-orange-100 font-medium">Total Scan</div>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-lg border-0 bg-green-600 text-white">
+                            <CardContent className="p-6 text-center">
+                                <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-4 mx-auto">
+                                    <CheckCircle2 className="w-6 h-6" />
+                                </div>
+                                <div className="text-3xl font-bold">{stats.sangatSegar}</div>
+                                <div className="text-green-100 font-medium">Sangat Segar</div>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-lg border-0 bg-yellow-500 text-white">
+                            <CardContent className="p-6 text-center">
+                                <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-4 mx-auto">
+                                    <TrendingUp className="w-6 h-6" />
+                                </div>
+                                <div className="text-3xl font-bold">{stats.cukupSegar}</div>
+                                <div className="text-yellow-100 font-medium">Cukup Segar</div>
+                            </CardContent>
+                        </Card>
+                        <Card className="shadow-lg border-0 bg-red-600 text-white">
+                            <CardContent className="p-6 text-center">
+                                <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-4 mx-auto">
+                                    <Archive className="w-6 h-6" />
+                                </div>
+                                <div className="text-3xl font-bold">{stats.kurangSegar}</div>
+                                <div className="text-red-100 font-medium">Kurang Segar</div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
                     {/* Search and Filter Section */}
-                    <Card className="border-none shadow-lg bg-white">
+                    <Card className="shadow-lg border-0">
                         <CardContent className="p-6">
-                            <div className="flex flex-col md:flex-row gap-4">
+                            <div className="flex flex-col lg:flex-row gap-4">
                                 {/* Search Input */}
                                 <div className="flex-1 relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                                     <Input 
-                                        placeholder="Cari hasil scan..."
+                                        placeholder="Cari hasil scan, lokasi, atau tanggal..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10 border-[#125F95] focus:ring-[#125F95]"
+                                        className="pl-12 h-12 border-2 border-gray-200 focus:border-orange-500 rounded-lg bg-white"
                                     />
                                 </div>
 
                                 {/* Filter Dropdown */}
-                                <select 
-                                    value={selectedFilter}
-                                    onChange={(e) => setSelectedFilter(e.target.value)}
-                                    className="px-4 py-2 border border-[#125F95] rounded-md focus:ring-[#125F95] focus:border-[#125F95]"
-                                >
-                                    {filterOptions.map(option => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="relative">
+                                    <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 z-10" />
+                                    <select 
+                                        value={selectedFilter}
+                                        onChange={(e) => setSelectedFilter(e.target.value)}
+                                        className="pl-12 pr-8 py-3 h-12 border-2 border-gray-200 rounded-lg focus:border-orange-500 bg-white appearance-none cursor-pointer min-w-[180px]"
+                                    >
+                                        {filterOptions.map(option => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
 
                                 {/* Clear All Button */}
                                 {scanHistory.length > 0 && (
                                     <Button 
                                         onClick={clearAllHistory}
                                         disabled={deleting}
-                                        variant="outline"
-                                        className="border-red-500 text-red-500 hover:bg-red-50"
+                                        className="h-12 px-6 bg-red-600 hover:bg-red-700 text-white"
                                     >
                                         {deleting ? (
                                             <Loader className="w-4 h-4 mr-2 animate-spin" />
@@ -206,100 +263,88 @@ export default function HistoryPage() {
                         </CardContent>
                     </Card>
 
-                    {/* Statistics Cards */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <Card className="border-none shadow-md bg-white">
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-[#0D253C]">{scanHistory.length}</div>
-                                <div className="text-sm text-gray-600">Total Scan</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-none shadow-md bg-white">
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-emerald-600">
-                                    {scanHistory.filter(item => item.freshness === 'Sangat Segar').length}
-                                </div>
-                                <div className="text-sm text-gray-600">Sangat Segar</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-none shadow-md bg-white">
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-yellow-600">
-                                    {scanHistory.filter(item => item.freshness === 'Cukup Segar').length}
-                                </div>
-                                <div className="text-sm text-gray-600">Cukup Segar</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="border-none shadow-md bg-white">
-                            <CardContent className="p-4 text-center">
-                                <div className="text-2xl font-bold text-red-600">
-                                    {scanHistory.filter(item => ['Kurang Segar', 'Tidak Segar'].includes(item.freshness)).length}
-                                </div>
-                                <div className="text-sm text-gray-600">Kurang Segar</div>
-                            </CardContent>
-                        </Card>
-                    </div>
-
                     {/* History List */}
                     {filteredHistory.length === 0 ? (
-                        <Card className="border-none shadow-lg bg-white">
-                            <CardContent className="p-12 text-center">
-                                <Fish className="mx-auto h-20 w-20 text-gray-300 mb-4" />
-                                <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                        <Card className="shadow-lg border-0">
+                            <CardContent className="p-16 text-center">
+                                <Fish className="mx-auto h-24 w-24 text-gray-400 mb-8" />
+                                <h3 className="text-2xl font-bold text-gray-600 mb-4">
                                     {scanHistory.length === 0 ? 'Belum Ada Riwayat Scan' : 'Tidak Ada Hasil Pencarian'}
                                 </h3>
-                                <p className="text-gray-500">
+                                <p className="text-gray-500 text-lg max-w-md mx-auto">
                                     {scanHistory.length === 0 
-                                        ? 'Mulai scan ikan untuk melihat riwayat di sini'
-                                        : 'Coba ubah kata kunci pencarian atau filter'
+                                        ? 'Mulai scan ikan untuk melihat riwayat analisis AI di sini'
+                                        : 'Coba ubah kata kunci pencarian atau filter untuk menemukan hasil yang Anda cari'
                                     }
                                 </p>
                             </CardContent>
                         </Card>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="grid gap-6">
                             {filteredHistory.map((item) => (
-                                <Card key={item.$id} className="border-none shadow-lg bg-white hover:shadow-xl transition-shadow">
-                                    <CardContent className="p-6">
-                                        <div className="flex flex-col gap-4">
-                                            {/* Header dengan badge dan tanggal */}
-                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                                <Badge className={`${getBadgeColor(item.freshness)} w-fit`}>
-                                                    {item.freshness}
-                                                </Badge>
-                                                <div className="flex items-center text-sm text-gray-500">
-                                                    <Calendar className="w-4 h-4 mr-1" />
-                                                    {formatDate(item.$createdAt)}
+                                <Card key={item.$id} className="shadow-lg border-0 hover:shadow-xl transition-shadow">
+                                    <CardContent className="p-8">
+                                        <div className="flex flex-col gap-6">
+                                            {/* Header */}
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="p-3 bg-orange-100 rounded-lg">
+                                                        <Fish className="w-6 h-6 text-orange-600" />
+                                                    </div>
+                                                    <div>
+                                                        <Badge className={`${getBadgeColor(item.freshness)} text-lg px-4 py-2 font-bold rounded-lg`}>
+                                                            {item.freshness}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3 text-gray-500">
+                                                    <Calendar className="w-5 h-5" />
+                                                    <span className="font-medium">{formatDate(item.$createdAt)}</span>
                                                 </div>
                                             </div>
 
                                             {/* Reason */}
-                                            <div className="bg-gray-50 p-4 rounded-lg">
-                                                <p className="text-gray-700 italic">"{item.reason}"</p>
+                                            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                                                <div className="flex items-start gap-3">
+                                                    <div className="p-2 bg-orange-100 rounded-lg mt-1">
+                                                        <Fish className="h-4 w-4 text-orange-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900 mb-2">Analisis AI:</p>
+                                                        <p className="text-gray-700 italic leading-relaxed">"{item.reason}"</p>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             {/* Location */}
                                             {item.location_address && (
-                                                <div className="flex items-start gap-2 text-sm text-gray-600">
-                                                    <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                                                    <span>{item.location_address}</span>
+                                                <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="p-2 bg-blue-200 rounded-lg mt-1">
+                                                            <MapPin className="w-4 h-4 text-blue-700" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-blue-900 mb-1">Lokasi Scan:</p>
+                                                            <p className="text-blue-700">{item.location_address}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             )}
 
                                             {/* Actions */}
-                                            <div className="flex justify-end">
+                                            <div className="flex justify-end border-t border-gray-200 pt-4">
                                                 <Button 
                                                     size="sm" 
-                                                    variant="outline"
                                                     onClick={() => deleteScanItem(item.$id)}
                                                     disabled={deleting}
-                                                    className="border-red-500 text-red-500 hover:bg-red-50"
+                                                    className="bg-red-600 hover:bg-red-700 text-white px-6 py-2"
                                                 >
                                                     {deleting ? (
-                                                        <Loader className="w-4 h-4 animate-spin" />
+                                                        <Loader className="w-4 h-4 animate-spin mr-2" />
                                                     ) : (
-                                                        <Trash2 className="w-4 h-4" />
+                                                        <Trash2 className="w-4 h-4 mr-2" />
                                                     )}
+                                                    Hapus
                                                 </Button>
                                             </div>
                                         </div>
@@ -312,4 +357,4 @@ export default function HistoryPage() {
             </div>
         </div>
     );
-}   
+}

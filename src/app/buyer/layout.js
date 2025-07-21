@@ -15,8 +15,6 @@ import {
     User,
     Menu,
     X,
-    Bell,
-    Settings,
     LogOut,
     ChevronDown,
     ScanLine,
@@ -190,11 +188,6 @@ const BuyerLayout = ({ children }) => {
                         )}
                     </Link>
 
-                    {/* Notification */}
-                    <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
-                        <Bell size={20} className="text-gray-600" />
-                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-                    </button>
 
                     {/* User Menu */}
                     <div className="relative">

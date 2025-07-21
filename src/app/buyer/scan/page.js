@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Fish, BrainCircuit, Loader, AlertCircle, Sparkles, RotateCcw, Camera, MapPin } from 'lucide-react';
+import { Upload, Fish, BrainCircuit, Loader, AlertCircle, Sparkles, RotateCcw, Camera, MapPin, CheckCircle2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { scanResultsService } from '@/lib/appwrite';
@@ -37,7 +37,6 @@ export default function ScanPage() {
                     const { latitude, longitude } = position.coords;
                     
                     try {
-                        // Reverse geocoding untuk mendapatkan alamat
                         const address = await reverseGeocode(latitude, longitude);
                         const locationData = {
                             latitude,
@@ -49,7 +48,6 @@ export default function ScanPage() {
                         setGettingLocation(false);
                         resolve(locationData);
                     } catch (error) {
-                        // Tetap simpan koordinat meski gagal mendapatkan alamat
                         const locationData = {
                             latitude,
                             longitude,
@@ -84,14 +82,13 @@ export default function ScanPage() {
                 },
                 {
                     enableHighAccuracy: true,
-                    timeout: 15000, // Increase timeout
-                    maximumAge: 600000 // 10 menit
+                    timeout: 15000,
+                    maximumAge: 600000
                 }
             );
         });
     };
 
-    // Fungsi reverse geocoding sederhana menggunakan Nominatim (OpenStreetMap)
     const reverseGeocode = async (lat, lon) => {
         try {
             const response = await fetch(
@@ -116,7 +113,6 @@ export default function ScanPage() {
     const handleFileChange = (e) => {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
-            // Validasi tipe file
             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
             if (!allowedTypes.includes(selectedFile.type)) {
                 toast.error("Format file tidak didukung", { 
@@ -125,7 +121,6 @@ export default function ScanPage() {
                 return;
             }
 
-            // Validasi ukuran file (5MB max)
             if (selectedFile.size > 5 * 1024 * 1024) {
                 toast.error("File terlalu besar", { 
                     description: "Maksimal ukuran file 5MB" 
@@ -136,7 +131,6 @@ export default function ScanPage() {
             setFile(selectedFile);
             setImageLoading(true);
             
-            // Menggunakan FileReader untuk preview yang lebih stabil
             const reader = new FileReader();
             reader.onload = (e) => {
                 setPreview(e.target.result);
@@ -151,7 +145,6 @@ export default function ScanPage() {
             };
             reader.readAsDataURL(selectedFile);
 
-            // Otomatis dapatkan lokasi ketika file dipilih
             if (!location) {
                 getCurrentLocation().catch(error => {
                     console.error('Location error:', error);
@@ -177,7 +170,6 @@ export default function ScanPage() {
         formData.append('file', file);
 
         try {
-            // Analisis gambar dengan AI
             const response = await fetch('/api/analyze-fish', {
                 method: 'POST',
                 body: formData,
@@ -191,10 +183,8 @@ export default function ScanPage() {
             const data = await response.json();
             setResult(data);
             
-            // Simpan hasil scan ke Appwrite (non-blocking)
             saveScanResultToAppwrite(data).catch(error => {
                 console.error('Save to Appwrite failed:', error);
-                // Don't show error to user, scan result is still valid
             });
             
             toast.success("Analisis berhasil!");
@@ -207,7 +197,6 @@ export default function ScanPage() {
         }
     };
 
-    // Fungsi untuk menyimpan hasil scan ke Appwrite
     const saveScanResultToAppwrite = async (result) => {
         try {
             if (!user) {
@@ -226,7 +215,6 @@ export default function ScanPage() {
             await scanResultsService.createScanResult(user.$id, scanData);
             console.log('Scan result saved to Appwrite successfully');
             
-            // Show success message only on successful save
             setTimeout(() => {
                 toast.success("Hasil scan telah disimpan", { 
                     description: "Data tersimpan di riwayat scan" 
@@ -236,7 +224,6 @@ export default function ScanPage() {
         } catch (error) {
             console.error('Error saving scan result to Appwrite:', error);
             
-            // Show specific error messages
             if (error.code === 401) {
                 toast.error("Gagal menyimpan", { 
                     description: "Sesi Anda mungkin telah berakhir. Silakan login kembali." 
@@ -251,7 +238,7 @@ export default function ScanPage() {
                 });
             }
             
-            throw error; // Re-throw for debugging
+            throw error;
         }
     };
 
@@ -280,15 +267,19 @@ export default function ScanPage() {
 
     const getBadgeColor = (freshness) => {
         switch (freshness) {
-            case 'Sangat Segar': return 'bg-emerald-500 hover:bg-emerald-600 text-white';
-            case 'Cukup Segar': return 'bg-yellow-500 hover:bg-yellow-600 text-white';
-            case 'Kurang Segar': return 'bg-[#F37125] hover:bg-orange-600 text-white';
-            case 'Tidak Segar': return 'bg-red-500 hover:bg-red-600 text-white';
-            default: return 'bg-gray-500 hover:bg-gray-600 text-white';
+            case 'Sangat Segar': 
+                return 'bg-green-600 text-white border-green-600';
+            case 'Cukup Segar': 
+                return 'bg-yellow-500 text-white border-yellow-500';
+            case 'Kurang Segar': 
+                return 'bg-orange-600 text-white border-orange-600';
+            case 'Tidak Segar': 
+                return 'bg-red-600 text-white border-red-600';
+            default: 
+                return 'bg-gray-600 text-white border-gray-600';
         }
     };
 
-    // Manual location trigger function
     const handleGetLocation = async () => {
         try {
             await getCurrentLocation();
@@ -301,45 +292,66 @@ export default function ScanPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F4F6F8]">
-            {/* Header Section */}
-            <div className="bg-[#0D253C] text-white p-6 rounded-b-3xl shadow-lg mb-6">
-                <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[#125F95] rounded-full mb-4">
-                        <Fish className="w-8 h-8 text-white" />
+        <div className="min-h-screen bg-gray-50">
+            {/* Clean Header */}
+            <div className="bg-white border-b border-gray-200 shadow-sm">
+                <div className="max-w-4xl mx-auto px-6 py-12">
+                    <div className="text-center">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-orange-600 rounded-xl shadow-lg mb-6">
+                            <Fish className="w-10 h-10 text-white" />
+                        </div>
+                        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                            AI Fish Scanner
+                        </h1>
+                        <p className="text-xl text-gray-600 mb-8">
+                            Teknologi AI untuk menganalisis kesegaran ikan secara instant
+                        </p>
+                        <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
+                                <span className="font-medium">Analisis Cepat</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
+                                <span className="font-medium">AI Powered</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
+                                <span className="font-medium">Akurat</span>
+                            </div>
+                        </div>
                     </div>
-                    <h1 className="text-2xl font-bold mb-2">Scan Kesegaran Ikan</h1>
-                    <p className="text-[#F4F6F8] text-sm">
-                        Upload foto ikan untuk analisis AI tingkat kesegaran
-                    </p>
                 </div>
             </div>
 
-            <div className="px-4 pb-8">
-                <div className="max-w-2xl mx-auto space-y-6">
-                    {/* Location Info */}
-                    <Card className="border-none shadow-lg bg-white">
-                        <CardContent className="p-4">
+            <div className="max-w-6xl mx-auto px-4 py-8">
+                <div className="space-y-8">
+                    {/* Location Card */}
+                    <Card className="shadow-lg border-0">
+                        <CardContent className="p-6">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <MapPin className="h-4 w-4 text-[#125F95]" />
-                                    {gettingLocation ? (
-                                        <div className="flex items-center gap-2">
-                                            <Loader className="h-4 w-4 animate-spin" />
-                                            <span className="text-sm text-gray-600">Mendapatkan lokasi...</span>
-                                        </div>
-                                    ) : location ? (
-                                        <span className="text-sm text-gray-700">{location.address}</span>
-                                    ) : (
-                                        <span className="text-sm text-gray-500">Lokasi tidak tersedia</span>
-                                    )}
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-orange-100 rounded-lg">
+                                        <MapPin className="h-6 w-6 text-orange-600" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold text-gray-900 text-lg">Lokasi Scan</h3>
+                                        {gettingLocation ? (
+                                            <div className="flex items-center gap-2">
+                                                <Loader className="h-4 w-4 animate-spin text-orange-600" />
+                                                <span className="text-gray-600">Mendapatkan lokasi...</span>
+                                            </div>
+                                        ) : location ? (
+                                            <p className="text-gray-600 max-w-md">{location.address}</p>
+                                        ) : (
+                                            <p className="text-gray-500">Lokasi tidak tersedia</p>
+                                        )}
+                                    </div>
                                 </div>
                                 {!location && !gettingLocation && (
                                     <Button
-                                        size="sm"
-                                        variant="outline"
                                         onClick={handleGetLocation}
-                                        className="text-xs"
+                                        className="bg-orange-600 hover:bg-orange-700 text-white"
                                     >
                                         Dapatkan Lokasi
                                     </Button>
@@ -348,177 +360,203 @@ export default function ScanPage() {
                         </CardContent>
                     </Card>
 
-                    {/* Upload Section */}
-                    <Card className="border-none shadow-lg bg-white">
-                        <CardHeader className="pb-4">
-                            <CardTitle className="flex items-center gap-2 text-[#0D253C]">
-                                <Camera className="h-5 w-5 text-[#125F95]" />
-                                Upload Gambar Ikan
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {!preview && !imageLoading ? (
-                                <div className="text-center p-8 border-2 border-dashed border-[#125F95] bg-blue-50 rounded-lg hover:border-[#F37125] transition-colors">
-                                    <Upload className="mx-auto h-12 w-12 text-[#125F95] mb-4" />
-                                    <h3 className="text-base font-medium text-[#0D253C] mb-2">
-                                        Pilih Foto Ikan
-                                    </h3>
-                                    <p className="text-sm text-gray-600 mb-4">
-                                        Format: PNG, JPG, WEBP (Max 5MB)
-                                    </p>
-                                    <Input 
-                                        ref={fileInputRef}
-                                        id="file-upload" 
-                                        type="file" 
-                                        className="sr-only" 
-                                        onChange={handleFileChange} 
-                                        accept="image/png,image/jpeg,image/jpg,image/webp" 
-                                    />
-                                    <Button asChild className="bg-[#125F95] hover:bg-[#0D253C] text-white">
-                                        <label htmlFor="file-upload" className="cursor-pointer">
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            Pilih Gambar
-                                        </label>
-                                    </Button>
-                                </div>
-                            ) : imageLoading ? (
-                                <div className="text-center p-8 border border-gray-200 rounded-lg bg-gray-50">
-                                    <Loader className="mx-auto h-8 w-8 text-[#125F95] animate-spin mb-4" />
-                                    <p className="text-sm text-gray-600">Memuat gambar...</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {/* Preview Container dengan styling yang diperbaiki */}
-                                    <div className="w-full border border-gray-200 rounded-lg p-4 bg-white">
-                                        <img 
-                                            src={preview} 
-                                            alt="Pratinjau Ikan" 
-                                            className="w-full h-80 object-contain mx-auto block"
-                                            onError={handleImageError}
-                                            onLoad={() => console.log('Image loaded successfully')}
-                                            style={{ 
-                                                maxWidth: '100%',
-                                                height: '320px',
-                                                backgroundColor: '#ffffff'
-                                            }}
-                                        />
+                    <div className="grid lg:grid-cols-2 gap-8">
+                        {/* Upload Section */}
+                        <Card className="shadow-lg border-0">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="flex items-center gap-3 text-gray-900 text-xl">
+                                    <div className="p-2 bg-orange-100 rounded-lg">
+                                        <Camera className="h-6 w-6 text-orange-600" />
                                     </div>
-                                    
-                                    <div className="flex gap-3">
-                                        <Button 
-                                            onClick={() => fileInputRef.current?.click()} 
-                                            variant="outline" 
-                                            className="flex-1 border-[#125F95] text-[#125F95] hover:bg-[#125F95] hover:text-white"
-                                        >
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            Ganti Gambar
-                                        </Button>
-                                        
-                                        {!isLoading && !result && (
-                                            <Button 
-                                                onClick={handleAnalyze} 
-                                                className="flex-1 bg-[#F37125] hover:bg-orange-600 text-white"
-                                            >
-                                                <Sparkles className="mr-2 h-4 w-4" />
-                                                Analisis AI
+                                    Upload Gambar Ikan
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {!preview && !imageLoading ? (
+                                    <div className="relative">
+                                        <div className="text-center p-12 border-2 border-dashed border-orange-300 bg-orange-50 rounded-xl hover:border-orange-500 transition-colors">
+                                            <Upload className="mx-auto h-16 w-16 text-orange-600 mb-6" />
+                                            <h3 className="text-xl font-bold text-gray-900 mb-3">
+                                                Pilih Foto Ikan
+                                            </h3>
+                                            <p className="text-gray-600 mb-6 max-w-sm mx-auto">
+                                                Upload foto ikan untuk analisis AI. Pastikan gambar jelas dan fokus pada ikan.
+                                            </p>
+                                            <div className="text-sm text-gray-500 mb-6">
+                                                Format: PNG, JPG, WEBP • Maksimal 5MB
+                                            </div>
+                                            <Input 
+                                                ref={fileInputRef}
+                                                id="file-upload" 
+                                                type="file" 
+                                                className="sr-only" 
+                                                onChange={handleFileChange} 
+                                                accept="image/png,image/jpeg,image/jpg,image/webp" 
+                                            />
+                                            <Button asChild className="bg-orange-600 hover:bg-orange-700 text-white">
+                                                <label htmlFor="file-upload" className="cursor-pointer">
+                                                    <Camera className="mr-2 h-5 w-5" />
+                                                    Pilih Gambar
+                                                </label>
                                             </Button>
-                                        )}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* Results Section */}
-                    <Card className="border-none shadow-lg bg-white">
-                        <CardHeader className="pb-4">
-                            <CardTitle className="flex items-center gap-2 text-[#0D253C]">
-                                <BrainCircuit className="h-5 w-5 text-[#125F95]" />
-                                Hasil Analisis AI
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {!preview && !imageLoading && (
-                                <div className="text-center p-8 text-gray-500">
-                                    <Fish className="mx-auto h-20 w-20 text-gray-300 mb-4" />
-                                    <p className="text-base">
-                                        Upload gambar ikan untuk melihat hasil analisis
-                                    </p>
-                                </div>
-                            )}
-
-                            {isLoading && (
-                                <div className="text-center p-8 bg-gradient-to-br from-[#F4F6F8] to-blue-50 rounded-lg border border-[#125F95]">
-                                    <Loader className="mx-auto h-12 w-12 text-[#125F95] animate-spin mb-4" />
-                                    <p className="font-semibold text-[#0D253C] text-base mb-2">
-                                        AI sedang menganalisis ikan...
-                                    </p>
-                                    <p className="text-[#125F95] text-sm">
-                                        Mohon tunggu beberapa saat
-                                    </p>
-                                </div>
-                            )}
-
-                            {error && (
-                                <div className="p-6 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                                        <h4 className="font-semibold">Terjadi Kesalahan</h4>
+                                ) : imageLoading ? (
+                                    <div className="text-center p-12 border border-gray-200 rounded-xl bg-gray-50">
+                                        <Loader className="mx-auto h-12 w-12 text-orange-600 animate-spin mb-4" />
+                                        <p className="text-gray-600 font-medium">Memuat gambar...</p>
                                     </div>
-                                    <p className="text-sm">{error}</p>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="space-y-6">
+                                        <div className="relative overflow-hidden rounded-xl bg-white shadow-md border">
+                                            <img 
+                                                src={preview} 
+                                                alt="Pratinjau Ikan" 
+                                                className="w-full h-80 object-contain"
+                                                onError={handleImageError}
+                                                style={{ backgroundColor: '#f8fafc' }}
+                                            />
+                                        </div>
+                                        
+                                        <div className="flex gap-3">
+                                            <Button 
+                                                onClick={() => fileInputRef.current?.click()} 
+                                                variant="outline" 
+                                                className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50"
+                                            >
+                                                <Upload className="mr-2 h-4 w-4" />
+                                                Ganti Gambar
+                                            </Button>
+                                            
+                                            {!isLoading && !result && (
+                                                <Button 
+                                                    onClick={handleAnalyze} 
+                                                    className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                                                >
+                                                    <Sparkles className="mr-2 h-4 w-4" />
+                                                    Analisis AI
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
 
-                            {result && (
-                                <div className="space-y-6">
-                                    <div className="text-center p-8 bg-gradient-to-br from-[#F4F6F8] to-gray-100 rounded-lg border border-gray-200">
-                                        <h3 className="text-xl font-bold mb-4 text-[#0D253C]">
-                                            Hasil Analisis Kesegaran
+                        {/* Results Section */}
+                        <Card className="shadow-lg border-0">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="flex items-center gap-3 text-gray-900 text-xl">
+                                    <div className="p-2 bg-orange-100 rounded-lg">
+                                        <BrainCircuit className="h-6 w-6 text-orange-600" />
+                                    </div>
+                                    Hasil Analisis AI
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {!preview && !imageLoading && (
+                                    <div className="text-center p-12">
+                                        <Fish className="mx-auto h-20 w-20 text-gray-400 mb-6" />
+                                        <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                                            Siap untuk Analisis
                                         </h3>
-                                        
-                                        <Badge className={`text-lg px-6 py-3 font-semibold rounded-full ${getBadgeColor(result.freshness)}`}>
-                                            {result.freshness}
-                                        </Badge>
-                                        
-                                        <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200">
-                                            <div className="flex items-start gap-3 text-gray-700">
-                                                <Fish className="h-5 w-5 mt-1 flex-shrink-0 text-[#125F95]" />
-                                                <div className="text-left">
-                                                    <p className="font-medium text-sm text-gray-500 mb-1">Penjelasan AI:</p>
-                                                    <p className="italic text-base text-[#0D253C]">"{result.reason}"</p>
-                                                </div>
+                                        <p className="text-gray-500">
+                                            Upload gambar ikan untuk melihat hasil analisis AI
+                                        </p>
+                                    </div>
+                                )}
+
+                                {isLoading && (
+                                    <div className="text-center p-12 bg-orange-50 rounded-xl border border-orange-200">
+                                        <Loader className="mx-auto h-16 w-16 text-orange-600 animate-spin mb-6" />
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3">
+                                            AI Sedang Menganalisis...
+                                        </h3>
+                                        <p className="text-orange-600 font-medium">
+                                            Mohon tunggu beberapa saat
+                                        </p>
+                                        <div className="mt-4 flex justify-center">
+                                            <div className="flex space-x-1">
+                                                <div className="w-2 h-2 bg-orange-600 rounded-full animate-bounce"></div>
+                                                <div className="w-2 h-2 bg-orange-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                                                <div className="w-2 h-2 bg-orange-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                                             </div>
                                         </div>
+                                    </div>
+                                )}
 
-                                        {location && (
-                                            <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                <div className="flex items-start gap-3 text-blue-700">
-                                                    <MapPin className="h-5 w-5 mt-1 flex-shrink-0" />
-                                                    <div className="text-left">
-                                                        <p className="font-medium text-sm text-blue-600 mb-1">Lokasi Scan:</p>
-                                                        <p className="text-sm">{location.address}</p>
+                                {error && (
+                                    <div className="p-6 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="p-2 bg-red-200 rounded-lg">
+                                                <AlertCircle className="h-5 w-5" />
+                                            </div>
+                                            <h4 className="font-bold text-lg">Terjadi Kesalahan</h4>
+                                        </div>
+                                        <p className="text-red-600">{error}</p>
+                                    </div>
+                                )}
+
+                                {result && (
+                                    <div className="space-y-6">
+                                        <div className="text-center p-8 bg-gray-50 rounded-xl border border-gray-200">
+                                            <div className="mb-6">
+                                                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-600 rounded-full mb-4">
+                                                    <CheckCircle2 className="w-8 h-8 text-white" />
+                                                </div>
+                                                <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                                                    Analisis Selesai
+                                                </h3>
+                                            </div>
+                                            
+                                            <Badge className={`text-xl px-8 py-4 font-bold rounded-lg ${getBadgeColor(result.freshness)}`}>
+                                                {result.freshness}
+                                            </Badge>
+                                            
+                                            <div className="mt-8 p-6 bg-white rounded-xl border border-gray-200">
+                                                <div className="flex items-start gap-3 text-gray-700">
+                                                    <div className="p-2 bg-orange-100 rounded-lg mt-1">
+                                                        <Fish className="h-5 w-5 text-orange-600" />
+                                                    </div>
+                                                    <div className="text-left flex-1">
+                                                        <p className="font-semibold text-gray-900 mb-2">Penjelasan AI:</p>
+                                                        <p className="text-gray-700 leading-relaxed italic">"{result.reason}"</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                        )}
+
+                                            {location && (
+                                                <div className="mt-6 p-6 bg-blue-50 rounded-xl border border-blue-200">
+                                                    <div className="flex items-start gap-3 text-blue-700">
+                                                        <div className="p-2 bg-blue-200 rounded-lg mt-1">
+                                                            <MapPin className="h-5 w-5 text-blue-700" />
+                                                        </div>
+                                                        <div className="text-left flex-1">
+                                                            <p className="font-semibold text-blue-900 mb-1">Lokasi Scan:</p>
+                                                            <p className="text-blue-700 text-sm">{location.address}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            
-                            {(result || error) && preview && (
-                                <div className="text-center pt-4 border-t border-gray-200">
-                                    <Button 
-                                        onClick={handleReset} 
-                                        variant="ghost" 
-                                        className="text-[#125F95] hover:text-[#0D253C] hover:bg-blue-50"
-                                    >
-                                        <RotateCcw className="mr-2 h-4 w-4" />
-                                        Scan Gambar Lain
-                                    </Button>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                )}
+                                
+                                {(result || error) && preview && (
+                                    <div className="text-center pt-6 border-t border-gray-200">
+                                        <Button 
+                                            onClick={handleReset} 
+                                            variant="outline"
+                                            className="text-orange-600 border-orange-600 hover:bg-orange-50"
+                                        >
+                                            <RotateCcw className="mr-2 h-4 w-4" />
+                                            Scan Gambar Lain
+                                        </Button>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>
