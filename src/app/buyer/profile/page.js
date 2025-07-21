@@ -33,7 +33,7 @@ export default function ProfilePage() {
                             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                                 <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-blue-100">
                                     <AvatarImage src={null} />
-                                    <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                                    <AvatarFallback className="text-2xl bg-orange-600 text-white">
                                         {getInitials(user.name)}
                                     </AvatarFallback>
                                 </Avatar>
@@ -43,13 +43,6 @@ export default function ProfilePage() {
                                         <Mail className="h-4 w-4 text-gray-500" />
                                         <p className="text-gray-600">{user.email}</p>
                                     </div>
-                                    <Badge 
-                                        variant={user.emailVerification ? "default" : "secondary"}
-                                        className={user.emailVerification ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}
-                                    >
-                                        <Shield className="mr-1 h-3 w-3" />
-                                        {user.emailVerification ? 'Email Terverifikasi' : 'Email Belum Terverifikasi'}
-                                    </Badge>
                                 </div>
                             </div>
                         </CardHeader>
@@ -97,33 +90,14 @@ export default function ProfilePage() {
                         <Card className="shadow-lg border-0">
                             <CardHeader>
                                 <CardTitle className="text-lg">Aksi Cepat</CardTitle>
-                                <CardDescription>Kelola akun Anda</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <Button 
-                                    variant="outline" 
-                                    className="w-full justify-start hover:bg-blue-50 hover:border-blue-300"
-                                >
-                                    <User className="mr-2 h-4 w-4" />
-                                    Edit Profil
-                                </Button>
-                                
-                                <Button 
-                                    variant="outline" 
-                                    className="w-full justify-start hover:bg-blue-50 hover:border-blue-300"
-                                >
-                                    <Shield className="mr-2 h-4 w-4" />
-                                    Keamanan
-                                </Button>
-                                
-                                <Separator />
-                                
+                            <CardContent className="space-y-4 text-white font-bold">
                                 <Button 
                                     onClick={logoutUser} 
                                     variant="destructive" 
                                     className="w-full justify-start hover:bg-red-600"
                                 >
-                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <LogOut className="mr-2 h-4 w-4 " />
                                     Keluar (Logout)
                                 </Button>
                             </CardContent>

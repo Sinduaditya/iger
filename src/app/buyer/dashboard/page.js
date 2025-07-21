@@ -9,10 +9,9 @@ import {
     TrendingUp, 
     Heart,
     Clock,
-    MapPin,
-    Star,
     ArrowRight,
-    Truck
+    Truck,
+    Fish
 } from 'lucide-react';
 import { authService } from '@/lib/appwrite';
 import { 
@@ -139,9 +138,9 @@ export default function BuyerDashboard() {
     return (
         <div className="space-y-6">
             {/* Welcome Header */}
-            <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-lg p-6 text-white">
+            <div className="bg-orange-600 rounded-lg p-6 text-white">
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                    Selamat datang, {user?.name || 'Pembeli'}! 🐟
+                    Selamat datang, {user?.name || 'Pembeli'}! 
                 </h1>
                 <p className="text-orange-100">
                     Temukan ikan segar terbaik dari pangkalan terpercaya di sekitar Anda

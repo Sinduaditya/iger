@@ -143,28 +143,30 @@ export default function ProductsPage() {
                     <p className="text-gray-600">Temukan ikan segar terbaik dari berbagai pangkalan</p>
                 </div>
                 
-                {/* View Mode Toggle */}
-                <div className="flex gap-2">
-                    <Button
-                        variant={viewMode === 'grid' ? 'default' : 'outline'}
-                        onClick={() => setViewMode('grid')}
-                        size="sm"
-                    >
-                        <Grid className="w-4 h-4 mr-2" />
-                        Grid
-                    </Button>
-                    <Button
-                        variant={viewMode === 'map' ? 'default' : 'outline'}
-                        onClick={() => setViewMode('map')}
-                        size="sm"
-                    >
-                        <Map className="w-4 h-4 mr-2" />
-                        Peta
-                    </Button>
-                </div>
-            </div>
+             
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant={viewMode === 'grid' ? 'default' : 'outline'}
+                                        onClick={() => setViewMode('grid')}
+                                        className={viewMode === 'grid' ? 'bg-orange-600 hover:bg-orange-700' : ''}
+                                        size="sm"
+                                    >
+                                        <Grid className="w-4 h-4 mr-2" />
+                                        Grid
+                                    </Button>
+                                    <Button
+                                        variant={viewMode === 'map' ? 'default' : 'outline'}
+                                        onClick={() => setViewMode('map')}
+                                        className={viewMode === 'map' ? 'bg-orange-600 hover:bg-orange-700' : ''}
+                                        size="sm"
+                                    >
+                                        <Map className="w-4 h-4 mr-2" />
+                                        Peta
+                                    </Button>
+                                </div>
+                            </div>
 
-            {/* Search and Filters */}
+                            {/* Search and Filters */}
             <div className="space-y-4">
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -339,12 +341,6 @@ function ProductGrid({ products, handleAddToCart, handleAddToFavorites, router }
                             <div className="flex justify-between items-center">
                                 <span className="text-sm">Stok: {product.stock} {product.unit}</span>
                             </div>
-                            {(product.latitude && product.longitude) && (
-                                <div className="flex items-center gap-1 text-xs text-gray-600">
-                                    <MapPin className="w-3 h-3" />
-                                    <span>{product.latitude.toFixed(4)}, {product.longitude.toFixed(4)}</span>
-                                </div>
-                            )}
                             {product.description && (
                                 <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
                             )}
