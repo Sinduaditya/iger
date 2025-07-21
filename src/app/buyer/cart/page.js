@@ -5,13 +5,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { authService } from '@/lib/appwrite';
-import { cartService } from '@/lib/buyer-services'
-
+import { cartService } from '@/lib/buyer-services';
 import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [updating, setUpdating] = useState({}); // Track which items are being updated
     const [user, setUser] = useState(null);
     const router = useRouter();
 
@@ -54,21 +54,61 @@ export default function CartPage() {
         if (newQuantity < 1) return;
 
         try {
-            await cartService.updateCartItem(cartItemId, newQuantity, unitPrice);
-            fetchCartItems();
+            // Set loading state for this specific item
+            setUpdating(prev => ({ ...prev, [cartItemId]: true }));
+
+            // Calculate new total price
+            const newTotalPrice = newQuantity * unitPrice;
+
+            // Update cart item
+            await cartService.updateCartItem(cartItemId, newQuantity, newTotalPrice);
+            
+            // Update local state immediately for better UX
+            setCartItems(prevItems => 
+                prevItems.map(item => 
+                    item.$id === cartItemId 
+                        ? { ...item, quantity: newQuantity, total_price: newTotalPrice }
+                        : item
+                )
+            );
+
+            console.log(`✅ Updated cart item ${cartItemId}: quantity=${newQuantity}, total=${newTotalPrice}`);
         } catch (error) {
             console.error('Error updating quantity:', error);
             alert('Gagal mengupdate jumlah');
+            // Refresh cart items on error
+            fetchCartItems();
+        } finally {
+            // Remove loading state for this item
+            setUpdating(prev => {
+                const newUpdating = { ...prev };
+                delete newUpdating[cartItemId];
+                return newUpdating;
+            });
         }
     };
 
     const removeItem = async (cartItemId) => {
-        try {
-            await cartService.removeFromCart(cartItemId);
-            fetchCartItems();
-        } catch (error) {
-            console.error('Error removing item:', error);
-            alert('Gagal menghapus item');
+        if (window.confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+            try {
+                setUpdating(prev => ({ ...prev, [cartItemId]: true }));
+                await cartService.removeFromCart(cartItemId);
+                
+                // Update local state immediately
+                setCartItems(prevItems => prevItems.filter(item => item.$id !== cartItemId));
+                
+                console.log(`✅ Removed cart item ${cartItemId}`);
+            } catch (error) {
+                console.error('Error removing item:', error);
+                alert('Gagal menghapus item');
+                fetchCartItems();
+            } finally {
+                setUpdating(prev => {
+                    const newUpdating = { ...prev };
+                    delete newUpdating[cartItemId];
+                    return newUpdating;
+                });
+            }
         }
     };
 
@@ -113,7 +153,7 @@ export default function CartPage() {
                     {/* Cart Items */}
                     <div className="lg:col-span-2 space-y-4">
                         {cartItems.map((item) => (
-                            <Card key={item.$id}>
+                            <Card key={item.$id} className={updating[item.$id] ? 'opacity-60' : ''}>
                                 <CardContent className="p-4">
                                     <div className="flex gap-4">
                                         <div className="w-20 h-20 bg-gray-200 rounded-lg overflow-hidden">
@@ -132,32 +172,49 @@ export default function CartPage() {
                                             <p className="text-lg font-bold text-orange-600">
                                                 Rp {item.unit_price.toLocaleString()} / {item.product?.unit}
                                             </p>
+                                            {item.product?.stock && (
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Stok tersedia: {item.product.stock} {item.product.unit}
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="flex flex-col items-end gap-2">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => removeItem(item.$id)}
+                                                disabled={updating[item.$id]}
                                                 className="text-red-600 hover:bg-red-50"
                                             >
-                                                <Trash2 className="w-4 h-4" />
+                                                {updating[item.$id] ? (
+                                                    <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                                                ) : (
+                                                    <Trash2 className="w-4 h-4" />
+                                                )}
                                             </Button>
                                             <div className="flex items-center gap-2">
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => updateQuantity(item.$id, item.quantity - 1, item.unit_price)}
-                                                    disabled={item.quantity <= 1}
+                                                    disabled={item.quantity <= 1 || updating[item.$id]}
+                                                    className="h-8 w-8 p-0"
                                                 >
                                                     <Minus className="w-4 h-4" />
                                                 </Button>
-                                                <span className="px-3 py-1 border rounded text-center min-w-[50px]">
-                                                    {item.quantity}
+                                                <span className="px-3 py-1 border rounded text-center min-w-[50px] bg-white">
+                                                    {updating[item.$id] ? (
+                                                        <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                                                    ) : (
+                                                        item.quantity
+                                                    )}
                                                 </span>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => updateQuantity(item.$id, item.quantity + 1, item.unit_price)}
+                                                    disabled={updating[item.$id]}
+                                                    className="h-8 w-8 p-0"
                                                 >
                                                     <Plus className="w-4 h-4" />
                                                 </Button>
@@ -196,8 +253,9 @@ export default function CartPage() {
                                 <Button 
                                     className="w-full mt-6 bg-orange-600 hover:bg-orange-700"
                                     onClick={() => router.push('/buyer/checkout')}
+                                    disabled={Object.keys(updating).length > 0}
                                 >
-                                    Lanjut ke Checkout
+                                    {Object.keys(updating).length > 0 ? 'Memproses...' : 'Lanjut ke Checkout'}
                                 </Button>
                                 <Button 
                                     variant="outline"

@@ -197,7 +197,7 @@ export const ordersService = {
     },
 
     // Update order status
-    async updateOrderStatus(orderId, status, additionalData = {}) {
+     async updateOrderStatus(orderId, status, additionalData = {}) {
         try {
             const updateData = {
                 status,
@@ -208,15 +208,115 @@ export const ordersService = {
                 updateData.delivery_date = new Date().toISOString();
             }
 
+            // 🔥 NEW: Update order status
             const response = await databases.updateDocument(
                 DATABASE_ID,
                 ORDERS_COLLECTION_ID,
                 orderId,
                 updateData
             );
+
+            // 🔥 NEW: Jika status berubah ke 'processing' dan ada driver_id, increment total_deliveries
+            if (status === 'processing' && additionalData.driver_id) {
+                try {
+                    const driver = await databases.getDocument(
+                        DATABASE_ID,
+                        DRIVERS_COLLECTION_ID,
+                        additionalData.driver_id
+                    );
+
+                    // Increment total_deliveries
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        DRIVERS_COLLECTION_ID,
+                        additionalData.driver_id,
+                        {
+                            total_deliveries: (driver.total_deliveries || 0) + 1,
+                            is_available: false // Set driver tidak tersedia saat dalam pengiriman
+                        }
+                    );
+
+                    console.log(`✅ Driver ${driver.name} total_deliveries incremented to ${(driver.total_deliveries || 0) + 1}`);
+                } catch (driverError) {
+                    console.error('Error updating driver stats:', driverError);
+                    // Don't throw error, just log it
+                }
+            }
+
+            // 🔥 NEW: Jika status berubah ke 'completed', update payment_status dan driver availability
+            if (status === 'completed') {
+                try {
+                    // Update payment status menjadi paid
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        ORDERS_COLLECTION_ID,
+                        orderId,
+                        {
+                            payment_status: 'paid'
+                        }
+                    );
+
+                    // Jika ada driver_id, set driver kembali tersedia
+                    if (response.driver_id) {
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            DRIVERS_COLLECTION_ID,
+                            response.driver_id,
+                            {
+                                is_available: true
+                            }
+                        );
+                        console.log(`✅ Driver ${response.driver_id} is now available again`);
+                    }
+
+                    console.log(`✅ Order ${orderId} payment status updated to 'paid'`);
+                } catch (paymentError) {
+                    console.error('Error updating payment status:', paymentError);
+                }
+            }
+
             return response;
         } catch (error) {
             console.error('Error updating order status:', error);
+            throw error;
+        }
+    },
+
+    // 🔥 NEW: Get order with driver details
+    async getOrderWithDriver(orderId) {
+        try {
+            const order = await databases.getDocument(
+                DATABASE_ID,
+                ORDERS_COLLECTION_ID,
+                orderId
+            );
+
+            // Get order items
+            const items = await databases.listDocuments(
+                DATABASE_ID,
+                ORDER_ITEMS_COLLECTION_ID,
+                [Query.equal('order_id', orderId)]
+            );
+            order.items = items.documents;
+
+            // Get driver details if assigned
+            if (order.driver_id) {
+                try {
+                    const driver = await databases.getDocument(
+                        DATABASE_ID,
+                        DRIVERS_COLLECTION_ID,
+                        order.driver_id
+                    );
+                    order.driver = driver;
+                } catch (driverError) {
+                    console.warn('Driver not found for order:', orderId);
+                    order.driver = null;
+                }
+            }
+
+            return order;
+        } catch (error) {
+            console.error('Error fetching order with driver:', error);
             throw error;
         }
     },

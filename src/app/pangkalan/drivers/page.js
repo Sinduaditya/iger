@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Phone, Edit, Trash2, Truck, Star, User, X, MapPin } from 'lucide-react';
+import { Plus, Search, Phone, Edit, Trash2, Truck, User, X, MapPin } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { driversService, pangkalanHelpers } from '@/lib/pangkalan-service';
 
@@ -182,7 +182,7 @@ export default function DriversPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card>
                     <CardContent className="p-4">
                         <div className="flex items-center justify-between">
@@ -216,17 +216,6 @@ export default function DriversPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-600">Rating Rata-rata</p>
-                                <p className="text-2xl font-bold">{stats.avgRating || 0}</p>
-                            </div>
-                            <Star className="w-8 h-8 text-yellow-500 fill-current" />
-                        </div>
-                    </CardContent>
-                </Card>
             </div>
 
             {/* Drivers Grid */}
@@ -245,10 +234,7 @@ export default function DriversPage() {
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-lg">{driver.name}</h3>
-                                            <div className="flex items-center gap-1">
-                                                <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                                                <span className="text-sm text-gray-600">{driver.rating || 0}</span>
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                     <button

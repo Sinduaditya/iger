@@ -312,15 +312,11 @@ export default function CheckoutSuccessPage() {
                     <ul className="space-y-2 text-blue-800">
                         <li className="flex items-start">
                             <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                            Pesanan Anda akan diproses dalam 1-2 hari kerja
+                            Pesanan Anda akan diproses dalam 1-2 Dua Jam kerja
                         </li>
                         <li className="flex items-start">
                             <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                            Anda akan menerima notifikasi ketika pesanan siap dikirim
-                        </li>
-                        <li className="flex items-start">
-                            <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                            Pantau status pesanan di halaman "Pesanan Saya"
+                            Pantau status pesanan di halaman "Pesanan"
                         </li>
                         {orderData.payment_status === 'pending' && (
                             <li className="flex items-start">

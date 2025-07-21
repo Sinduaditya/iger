@@ -6,8 +6,8 @@ import { Toaster } from "@/components/ui/sonner"; // Impor Toaster untuk notifik
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "iGer - Fish Freshness",
-  description: "Aplikasi Cek Kesegaran Ikan",
+  title: "iGer - AI Fish Delivery & Freshness Check",
+  description: "Aplikasi pengiriman ikan dengan pengecekan kesegaran menggunakan AI",
 };
 
 export default function RootLayout({ children }) {
