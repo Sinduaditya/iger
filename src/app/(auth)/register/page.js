@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ArrowLeft, Users, Store } from 'lucide-react';
+import { ArrowLeft, Users, Store, Mail, Lock, Phone, MapPin, FileText, Clock, UserCheck } from 'lucide-react';
 
 // Schema untuk User
 const userSchema = z.object({
@@ -111,14 +111,12 @@ export default function RegisterPage() {
                 icon: Users,
                 title: "Daftar sebagai Pembeli",
                 description: "Bergabung untuk membeli ikan segar berkualitas",
-                color: "blue"
             };
         } else {
             return {
                 icon: Store,
                 title: "Daftar sebagai Pangkalan",
                 description: "Bergabung untuk menjual ikan dan mengelola bisnis",
-                color: "orange"
             };
         }
     };
@@ -127,214 +125,264 @@ export default function RegisterPage() {
     const Icon = roleInfo.icon;
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md">
-                <CardHeader className="text-center">
-                    <div className="flex items-center justify-center space-x-2 mb-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => router.push('/login')}
-                            className="absolute left-4 top-4"
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                        </Button>
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                            roleInfo.color === 'blue' ? 'bg-blue-100' : 'bg-orange-100'
-                        }`}>
-                            <Icon className={`w-6 h-6 ${
-                                roleInfo.color === 'blue' ? 'text-blue-600' : 'text-orange-600'
-                            }`} />
-                        </div>
+        <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 flex items-center justify-center p-4">
+            <div className="w-full max-w-lg">
+                {/* Header Section */}
+                <div className="text-center mb-6">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push('/login')}
+                        className="absolute left-4 top-4 hover:bg-orange-100 text-orange-600"
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Kembali
+                    </Button>
+                    
+                    <div className="bg-gradient-to-r from-orange-500 to-orange-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <Icon className="w-8 h-8 text-white" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900">
+                    
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">
                         {roleInfo.title}
-                    </CardTitle>
-                    <CardDescription className="text-gray-600">
+                    </h1>
+                    <p className="text-gray-600 text-sm">
                         {roleInfo.description}
-                    </CardDescription>
-                </CardHeader>
-
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            {isUser ? "Nama Lengkap" : "Nama Pangkalan"}
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input 
-                                                placeholder={isUser ? "John Doe" : "Pangkalan Ikan Segar"} 
-                                                {...field} 
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input 
-                                                type="email"
-                                                placeholder="email@contoh.com" 
-                                                {...field} 
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Password</FormLabel>
-                                        <FormControl>
-                                            <Input 
-                                                type="password" 
-                                                placeholder="••••••••" 
-                                                {...field} 
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="phone"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Nomor Telepon</FormLabel>
-                                        <FormControl>
-                                            <Input 
-                                                placeholder="081234567890" 
-                                                {...field} 
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="address"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Alamat Lengkap</FormLabel>
-                                        <FormControl>
-                                            <Textarea 
-                                                placeholder="Jl. Contoh No. 123, Kota, Provinsi"
-                                                className="min-h-[80px]"
-                                                {...field} 
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Fields khusus untuk Pangkalan */}
-                            {isPangkalan && (
-                                <>
-                                    <FormField
-                                        control={form.control}
-                                        name="businessLicense"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Nomor Izin Usaha</FormLabel>
-                                                <FormControl>
-                                                    <Input 
-                                                        placeholder="123456789"
-                                                        {...field} 
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="operatingHours"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Jam Operasional</FormLabel>
-                                                <FormControl>
-                                                    <Input 
-                                                        placeholder="08:00 - 17:00"
-                                                        {...field} 
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="driverCount"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Jumlah Driver</FormLabel>
-                                                <FormControl>
-                                                    <Input 
-                                                        type="number"
-                                                        min="1"
-                                                        max="50"
-                                                        placeholder="1"
-                                                        value={field.value || ''}
-                                                        onChange={(e) => {
-                                                            const value = e.target.value;
-                                                            field.onChange(value === '' ? '' : parseInt(value, 10));
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </>
-                            )}
-
-                            <Button 
-                                type="submit" 
-                                className={`w-full ${
-                                    roleInfo.color === 'blue' 
-                                        ? 'bg-blue-600 hover:bg-blue-700' 
-                                        : 'bg-orange-600 hover:bg-orange-700'
-                                }`}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? "Mendaftar..." : "Daftar"}
-                            </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-
-                <CardFooter className="text-center text-sm">
-                    <p className="text-gray-600">
-                        Sudah punya akun?{' '}
-                        <Link href="/login" className="text-blue-600 hover:underline font-medium">
-                            Login di sini
-                        </Link>
                     </p>
-                </CardFooter>
-            </Card>
+                </div>
+
+                <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+                    <CardContent className="p-6">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                                {/* Basic Information Section */}
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-semibold text-orange-600 uppercase tracking-wide border-b border-orange-200 pb-2">
+                                        Informasi Dasar
+                                    </h3>
+                                    
+                                    <FormField
+                                        control={form.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 text-gray-700">
+                                                    <Users className="w-4 h-4 text-orange-500" />
+                                                    {isUser ? "Nama Lengkap" : "Nama Pangkalan"}
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input 
+                                                        placeholder={isUser ? "Masukkan nama lengkap" : "Masukkan nama pangkalan"} 
+                                                        className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
+                                                        {...field} 
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 text-gray-700">
+                                                    <Mail className="w-4 h-4 text-orange-500" />
+                                                    Email
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input 
+                                                        type="email"
+                                                        placeholder="contoh@email.com" 
+                                                        className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
+                                                        {...field} 
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 text-gray-700">
+                                                    <Lock className="w-4 h-4 text-orange-500" />
+                                                    Password
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input 
+                                                        type="password" 
+                                                        placeholder="Minimal 8 karakter" 
+                                                        className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
+                                                        {...field} 
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                {/* Contact Information Section */}
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-semibold text-orange-600 uppercase tracking-wide border-b border-orange-200 pb-2">
+                                        Informasi Kontak
+                                    </h3>
+                                    
+                                    <FormField
+                                        control={form.control}
+                                        name="phone"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 text-gray-700">
+                                                    <Phone className="w-4 h-4 text-orange-500" />
+                                                    Nomor Telepon
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input 
+                                                        placeholder="081234567890" 
+                                                        className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
+                                                        {...field} 
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="address"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="flex items-center gap-2 text-gray-700">
+                                                    <MapPin className="w-4 h-4 text-orange-500" />
+                                                    Alamat Lengkap
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Textarea 
+                                                        placeholder="Jl. Contoh No. 123, Kelurahan, Kecamatan, Kota, Provinsi"
+                                                        className="min-h-[100px] border-gray-200 focus:border-orange-400 focus:ring-orange-200 resize-none"
+                                                        {...field} 
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                {/* Business Information Section - Pangkalan Only */}
+                                {isPangkalan && (
+                                    <div className="space-y-4">
+                                        <h3 className="text-sm font-semibold text-orange-600 uppercase tracking-wide border-b border-orange-200 pb-2">
+                                            Informasi Bisnis
+                                        </h3>
+                                        
+                                        <FormField
+                                            control={form.control}
+                                            name="businessLicense"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2 text-gray-700">
+                                                        <FileText className="w-4 h-4 text-orange-500" />
+                                                        Nomor Izin Usaha
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input 
+                                                            placeholder="Masukkan nomor izin usaha"
+                                                            className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
+                                                            {...field} 
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="operatingHours"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2 text-gray-700">
+                                                        <Clock className="w-4 h-4 text-orange-500" />
+                                                        Jam Operasional
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input 
+                                                            placeholder="08:00 - 17:00"
+                                                            className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
+                                                            {...field} 
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="driverCount"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2 text-gray-700">
+                                                        <UserCheck className="w-4 h-4 text-orange-500" />
+                                                        Jumlah Driver
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input 
+                                                            type="number"
+                                                            min="1"
+                                                            max="50"
+                                                            placeholder="Masukkan jumlah driver"
+                                                            className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
+                                                            value={field.value || ''}
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                field.onChange(value === '' ? '' : parseInt(value, 10));
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                )}
+
+                                <Button 
+                                    type="submit" 
+                                    className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-[1.02]"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            Mendaftar...
+                                        </div>
+                                    ) : (
+                                        "Daftar Sekarang"
+                                    )}
+                                </Button>
+                            </form>
+                        </Form>
+                    </CardContent>
+
+                    <CardFooter className="text-center py-4 bg-gray-50 rounded-b-lg">
+                        <p className="text-gray-600 text-sm w-full">
+                            Sudah punya akun?{' '}
+                            <Link href="/login" className="text-orange-600 hover:text-orange-700 font-semibold hover:underline transition-colors">
+                                Login di sini
+                            </Link>
+                        </p>
+                    </CardFooter>
+                </Card>
+            </div>
         </div>
     );
 }

@@ -131,7 +131,7 @@ const BuyerLayout = ({ children }) => {
             '/buyer/addresses': 'Alamat',
             '/buyer/history': 'Riwayat',
             '/buyer/profile': 'Profil',
-            '/buyer/scan': 'Scan QR'
+            '/buyer/scan': 'Scan Ikan'
         };
 
         for (const [route, title] of Object.entries(routes)) {
@@ -152,7 +152,7 @@ const BuyerLayout = ({ children }) => {
         { href: '/buyer/favorites', icon: Heart, label: 'Favorit' },
         { href: '/buyer/addresses', icon: MapPin, label: 'Alamat' },
         { href: '/buyer/history', icon: History, label: 'Riwayat' },
-        { href: '/buyer/scan', icon: ScanLine, label: 'Scan QR' },
+        { href: '/buyer/scan', icon: ScanLine, label: 'Scan' },
         { href: '/buyer/profile', icon: User, label: 'Profil' },
     ];
 

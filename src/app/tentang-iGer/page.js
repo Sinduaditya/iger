@@ -37,60 +37,27 @@ export default function TentangIgerPage() {
   }, []);
 
   const teamMembers = [
-    {
-      name: "Sindu",
-      role: "CEO & Founder",
-      experience: "15+ tahun di industri perikanan",
-      description: "Memimpin transformasi digital industri perikanan Indonesia",
-      image: "/images/team1.jpg"
-    },
-    {
-      name: "Sindu",
-      role: "CTO",
-      experience: "12+ tahun dalam teknologi AI",
-      description: "Spesialis dalam pengembangan sistem AI untuk deteksi kualitas",
-      image: "/images/team2.jpg"
-    },
-    {
-      name: "Sindu",
-      role: "Head of Operations",
-      experience: "10+ tahun dalam logistik",
-      description: "Ahli dalam optimasi rantai supply dan distribusi nasional",
-      image: "/images/team3.jpg"
-    }
-  ];
-
-  const milestones = [
-    {
-      year: "2020",
-      title: "Awal Perjalanan",
-      description: "IGER didirikan dengan visi menghubungkan nelayan dan konsumen melalui teknologi digital",
-      icon: <Compass className="w-6 h-6" />
-    },
-    {
-      year: "2021",
-      title: "Teknologi AI",
-      description: "Mengembangkan sistem AI scan revolusioner untuk mendeteksi kesegaran ikan dengan akurasi 98%",
-      icon: <TrendingUp className="w-6 h-6" />
-    },
-    {
-      year: "2022",
-      title: "Ekspansi Nasional",
-      description: "Melayani 15 kota besar di Indonesia dengan 100+ pangkalan partner terpercaya",
-      icon: <MapPin className="w-6 h-6" />
-    },
-    {
-      year: "2023",
-      title: "Platform Terpercaya",
-      description: "Mencapai 10,000+ pengguna aktif dan 500+ pangkalan partner dengan rating 4.8/5",
-      icon: <Award className="w-6 h-6" />
-    },
-    {
-      year: "2024",
-      title: "Inovasi Berkelanjutan",
-      description: "Meluncurkan fitur tracking real-time dan AI assistant untuk pengalaman pengguna optimal",
-      icon: <Star className="w-6 h-6" />
-    }
+      {
+        "name": "Sindu",
+        "role": "Fullstack Developer",
+        "experience": "Mahasiswa Universitas Dian Nuswantoro",
+        "description": "Sebagai Project Lead dan Fullstack Developer, Sindu adalah arsitek utama di balik sistem iGer. Ia bertanggung jawab penuh atas infrastruktur backend menggunakan Appwrite, mulai dari membangun sistem otentikasi yang aman hingga merancang logika bisnis untuk fitur marketplace. Keahliannya memastikan seluruh platform berjalan secara handal, aman, dan terintegrasi dari hulu ke hilir.",
+        "image": "/images/team1.jpg"
+      },
+      {
+        "name": "Raina",
+        "role": "Frontend Developer",
+        "experience": "Mahasiswa Universitas Dian Nuswantoro",
+        "description": "Raina adalah kekuatan kreatif di balik antarmuka iGer, menggabungkan perannya sebagai UI/UX Designer dan Frontend Developer. Ia menerjemahkan kebutuhan pengguna menjadi desain yang intuitif dan menarik di Figma, kemudian mewujudkannya menjadi aplikasi web yang responsif menggunakan Next.js dan Shadcn/ui. Dedikasinya memastikan iGer tidak hanya canggih, tetapi juga mudah dan menyenangkan untuk digunakan.",
+        "image": "/images/team2.jpg"
+      },
+      {
+        "name": "Jovan",
+        "role": "Machine Learning Engineer",
+        "experience": "Mahasiswa Universitas Dian Nuswantoro",
+        "description": "Jovan adalah otak di balik fitur unggulan iGer sebagai Machine Learning Engineer. Ia bertanggung jawab atas seluruh siklus hidup model AI, mulai dari mengumpulkan dataset gambar, melakukan fine-tuning pada model Computer Vision (MobileNetV2), hingga mengoptimalkannya untuk dijalankan secara efisien di perangkat pengguna menggunakan TensorFlow.js. Karyanya adalah inti dari kemampuan iGer untuk menganalisis kesegaran ikan secara akurat dan cepat.",
+        "image": "/images/team3.jpg"
+      }
   ];
 
   const achievements = [
@@ -145,14 +112,6 @@ export default function TentangIgerPage() {
                 Tentang iGer
                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#F37125] transition-all duration-300"></span>
               </Link>
-              <Link href="/fitur-kami" className="text-sm font-medium transition-all duration-300 hover:text-[#F37125] relative group text-[#0D253C]">
-                Fitur Kami
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F37125] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link href="/kontak" className="text-sm font-medium transition-all duration-300 hover:text-[#F37125] relative group text-[#0D253C]">
-                Hubungi Kami
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#F37125] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
             </nav>
 
             {/* Mobile Menu Button */}
@@ -181,12 +140,6 @@ export default function TentangIgerPage() {
               </Link>
               <Link href="/tentang-iger" className="text-[#F37125] transition-colors">
                 Tentang iGer
-              </Link>
-              <Link href="/fitur-kami" className="text-[#0D253C] hover:text-[#F37125] transition-colors">
-                Fitur Kami
-              </Link>
-              <Link href="/kontak" className="text-[#0D253C] hover:text-[#F37125] transition-colors">
-                Hubungi Kami
               </Link>
             </nav>
           </div>
@@ -223,14 +176,11 @@ export default function TentangIgerPage() {
           
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center">
-              <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30 px-4 py-2 backdrop-blur-sm">
-                🐟 Tentang Platform Ikan Segar Terdepan
-              </Badge>
               
               <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight text-white drop-shadow-lg">
                 Mengenal Lebih Dekat
                 <span className="text-[#F37125] block mt-2 bg-gradient-to-r from-[#F37125] to-[#F37125]/80 bg-clip-text text-transparent drop-shadow-md">
-                  IGER Platform
+                  iGer Platform
                 </span>
               </h1>
               
@@ -336,54 +286,6 @@ export default function TentangIgerPage() {
           </div>
         </section>
 
-        {/* Timeline Section - Enhanced */}
-        <section className="py-20 px-6 bg-[#F4F6F8] relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#125F95]/10 to-transparent rounded-full transform translate-x-32 -translate-y-32"></div>
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-[#F37125]/10 to-transparent rounded-full transform -translate-x-36 translate-y-36"></div>
-          
-          <div className="max-w-6xl mx-auto relative z-10">
-            <div className="text-center mb-16">
-              <h3 className="text-3xl md:text-4xl font-bold text-[#0D253C] mb-4">
-                Perjalanan IGER
-              </h3>
-              <p className="text-lg text-[#125F95] max-w-2xl mx-auto">
-                Dari startup kecil hingga menjadi platform terpercaya dalam industri perikanan Indonesia
-              </p>
-            </div>
-
-            <div className="relative">
-              {/* Timeline Line */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-[#125F95] to-[#F37125] rounded-full"></div>
-              
-              {milestones.map((milestone, index) => (
-                <div key={index} className={`relative mb-12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                  <div className={`max-w-md ${index % 2 === 0 ? 'ml-auto' : 'mr-auto'}`}>
-                    <Card className="hover:shadow-xl transition-all duration-500 group transform hover:-translate-y-2 border-2 hover:border-[#F37125]">
-                      <CardHeader>
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-[#F37125] to-[#F37125]/80 rounded-lg flex items-center justify-center text-white">
-                            {milestone.icon}
-                          </div>
-                          <Badge className="bg-[#125F95] text-white px-3 py-1">
-                            {milestone.year}
-                          </Badge>
-                        </div>
-                        <CardTitle className="text-xl text-[#0D253C] mb-2">{milestone.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-[#125F95] leading-relaxed">{milestone.description}</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  
-                  {/* Timeline Dot */}
-                  <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-gradient-to-r from-[#F37125] to-[#F37125]/80 rounded-full border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-300"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Team Section - Enhanced */}
         <section className="py-20 px-6 bg-white relative overflow-hidden">
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-br from-[#F37125]/10 to-transparent rounded-full transform -translate-x-36 translate-y-36"></div>
@@ -441,7 +343,7 @@ export default function TentangIgerPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <Card className="text-center hover:shadow-xl transition-all duration-500 group transform hover:-translate-y-2 border-2 hover:border-[#125F95]">
                 <CardHeader className="pb-4">
-                  <div className="mx-auto bg-gradient-to-r from-[#125F95] to-[#0D253C] rounded-full h-20 w-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <div className="mx-auto bg-[#125F95] rounded-full h-20 w-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <Heart className="h-10 w-10 text-white" />
                   </div>
                   <CardTitle className="mt-4 text-lg text-[#0D253C]">Kepercayaan</CardTitle>
@@ -453,7 +355,7 @@ export default function TentangIgerPage() {
 
               <Card className="text-center hover:shadow-xl transition-all duration-500 group transform hover:-translate-y-2 border-2 hover:border-[#F37125]">
                 <CardHeader className="pb-4">
-                  <div className="mx-auto bg-gradient-to-r from-[#F37125] to-[#F37125]/80 rounded-full h-20 w-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <div className="mx-auto bg-[#F37125] rounded-full h-20 w-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <TrendingUp className="h-10 w-10 text-white" />
                   </div>
                   <CardTitle className="mt-4 text-lg text-[#0D253C]">Inovasi</CardTitle>
@@ -465,7 +367,7 @@ export default function TentangIgerPage() {
 
               <Card className="text-center hover:shadow-xl transition-all duration-500 group transform hover:-translate-y-2 border-2 hover:border-[#125F95]">
                 <CardHeader className="pb-4">
-                  <div className="mx-auto bg-gradient-to-r from-[#125F95] to-[#F37125] rounded-full h-20 w-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <div className="mx-auto bg-[#125F95] rounded-full h-20 w-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <Users className="h-10 w-10 text-white" />
                   </div>
                   <CardTitle className="mt-4 text-lg text-[#0D253C]">Kemitraan</CardTitle>
@@ -477,7 +379,7 @@ export default function TentangIgerPage() {
 
               <Card className="text-center hover:shadow-xl transition-all duration-500 group transform hover:-translate-y-2 border-2 hover:border-[#F37125]">
                 <CardHeader className="pb-4">
-                  <div className="mx-auto bg-gradient-to-r from-[#F37125] to-[#0D253C] rounded-full h-20 w-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <div className="mx-auto bg-[#F37125] rounded-full h-20 w-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <Award className="h-10 w-10 text-white" />
                   </div>
                   <CardTitle className="mt-4 text-lg text-[#0D253C]">Kualitas</CardTitle>
@@ -492,61 +394,87 @@ export default function TentangIgerPage() {
       </main>
 
       {/* Footer - Same as HomePage */}
-      <footer className="bg-[#0D253C] text-slate-300 py-12 px-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#125F95]/20 to-transparent rounded-full transform translate-x-32 -translate-y-32"></div>
-
-        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 relative z-10">
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-[#125F95] to-[#F37125] rounded-xl flex items-center justify-center">
-                <img
-                src="/images/logo.png"
-                alt="IGER Logo"
-                className="w-full h-full object-cover"
-              />
+      <footer className="bg-[#0D253C] text-[#F4F6F8] py-8 md:py-12 px-4 md:px-6">
+              <div className="max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
+                  {/* Company Info */}
+                  <div className="md:col-span-2">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl flex items-center justify-center">
+                        <img
+                          src="/images/logo.png"
+                          alt="IGER Logo"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-lg md:text-xl font-bold text-[#FFFFFF]">IGER</h4>
+                        <p className="text-sm text-[#F4F6F8]">Fish Delivery Platform</p>
+                      </div>
+                    </div>
+                    <p className="text-[#F4F6F8] mb-4 max-w-md text-sm md:text-base">
+                      Platform pengiriman ikan segar terpercaya yang menghubungkan pembeli dengan pangkalan ikan berkualitas di seluruh Indonesia.
+                    </p>
+                    <div className="flex items-center text-sm">
+                      <Star className="w-4 h-4 text-[#F37125] mr-1" />
+                      <span className="text-[#FFFFFF] font-semibold">4.8</span>
+                      <span className="text-[#F4F6F8] ml-1">(1,234 ulasan)</span>
+                    </div>
+                  </div>
+      
+                  {/* Platform Links */}
+                  <div>
+                    <h5 className="font-semibold text-[#FFFFFF] mb-4">Platform</h5>
+                    <ul className="space-y-2 text-sm">
+                      <li>
+                        <a href="/register?role=user" className="hover:text-[#F37125] transition-colors">
+                          Untuk Pembeli
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/register?role=pangkalan" className="hover:text-[#F37125] transition-colors">
+                          Untuk Pangkalan
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/login" className="hover:text-[#F37125] transition-colors">
+                          Login
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+      
+                  {/* Help Links */}
+                  <div>
+                    <h5 className="font-semibold text-[#FFFFFF] mb-4">Bantuan</h5>
+                    <ul className="space-y-2 text-sm">
+                      <li>
+                        <a href="#" className="hover:text-[#F37125] transition-colors">
+                          Pusat Bantuan
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" className="hover:text-[#F37125] transition-colors">
+                          Kontak Support
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" className="hover:text-[#F37125] transition-colors">
+                          FAQ
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+      
+                {/* Copyright */}
+                <div className="border-t border-[#125F95] pt-6 md:pt-8 text-center">
+                  <p className="text-sm text-[#F4F6F8]">
+                    &copy; {new Date().getFullYear()} IGER. Platform Pengiriman Ikan Segar. Dibuat dengan ❤ di Indonesia.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-xl font-bold text-white">IGER</h4>
-                <p className="text-sm text-slate-400">Fish Delivery Platform</p>
-              </div>
-            </div>
-            <p className="text-slate-400 mb-4 max-w-md">
-              Platform pengiriman ikan segar terpercaya yang menghubungkan pembeli dengan pangkalan ikan berkualitas di seluruh Indonesia.
-            </p>
-            <div className="flex gap-4">
-              <div className="flex items-center text-sm">
-                <Star className="w-4 h-4 text-[#F37125] mr-1" />
-                <span className="text-white font-semibold">4.8</span>
-                <span className="text-slate-400 ml-1">(1,234 ulasan)</span>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h5 className="font-semibold text-white mb-4">Platform</h5>
-            <ul className="space-y-2 text-sm">
-              <li><a href="/register?role=user" className="hover:text-[#F37125] transition-colors">Untuk Pembeli</a></li>
-              <li><a href="/register?role=pangkalan" className="hover:text-[#F37125] transition-colors">Untuk Pangkalan</a></li>
-              <li><a href="/login" className="hover:text-[#F37125] transition-colors">Login</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h5 className="font-semibold text-white mb-4">Bantuan</h5>
-            <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-[#F37125] transition-colors">Pusat Bantuan</a></li>
-              <li><a href="#" className="hover:text-[#F37125] transition-colors">Kontak Support</a></li>
-              <li><a href="#" className="hover:text-[#F37125] transition-colors">FAQ</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="max-w-6xl mx-auto border-t border-slate-700 mt-8 pt-8 text-center relative z-10">
-          <p className="text-sm text-slate-400">
-            &copy; {new Date().getFullYear()} IGER. Platform Pengiriman Ikan Segar. Dibuat dengan ❤ di Indonesia.
-          </p>
-        </div>
-      </footer>
+            </footer>
     </div>
   );
 }

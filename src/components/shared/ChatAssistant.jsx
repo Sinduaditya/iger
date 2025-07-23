@@ -98,7 +98,7 @@ export function ChatAssistant() {
       </SheetTrigger>
       <SheetContent className="flex flex-col w-full sm:max-w-md h-full">
         <SheetHeader className="pb-4">
-          <SheetTitle className="text-lg font-semibold">🐟 iGer AI Assistant</SheetTitle>
+          <SheetTitle className="text-lg font-semibold">iGer AI Assistant</SheetTitle>
           <SheetDescription className="text-sm text-gray-600">
             Tanya apa saja tentang ikan dan budidaya perikanan
           </SheetDescription>

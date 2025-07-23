@@ -47,7 +47,7 @@ export default function LoginPage() {
 
     // Theme configuration based on role
     const getThemeConfig = (role) => {
-        if (role === 'pangkalan') {
+        if (role === 'user') {
             return {
                 primary: 'bg-blue-600 hover:bg-blue-700',
                 secondary: 'bg-blue-100 text-blue-700',
@@ -125,18 +125,21 @@ export default function LoginPage() {
                 {/* Left Panel - Info Section */}
                 <div className={`hidden lg:flex flex-col justify-center px-12 py-8 bg-gradient-to-br ${user?.role ? theme.gradient : 'from-blue-50 to-indigo-100'}`}>
                     <div className="max-w-md">
-                        {/* Logo & Brand */}
-                        <div className="flex items-center mb-10">
-                            <div className={`inline-flex items-center justify-center w-16 h-16 ${user?.role ? theme.primary : 'bg-blue-600'} rounded-2xl mr-4`}>
-                                <Fish className="w-8 h-8 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900">IGER</h1>
-                                <p className="text-gray-600">Pasar Ikan Digital</p>
-                            </div>
-                        </div>
+                    
+                                                <div className="flex items-center mb-10">
+                                                    <div className={`inline-flex items-center justify-center w-16 h-16 ${user?.role ? theme.primary : 'bg-white'} rounded-2xl mr-4`}>
+                                                       <img
+                                                                       src="/images/logo.png"
+                                                                       alt="IGER Logo"
+                                                                       className="w-full h-full object-cover"
+                                                                     />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-gray-600 text-lg font-semibold">Pasar Ikan Digital</p>
+                                                    </div>
+                                                </div>
 
-                        {/* Features */}
+                                                {/* Features */}
                         <div className="space-y-8">
                             <h2 className="text-2xl font-semibold text-gray-900 mb-8">
                                 {user?.role === 'pangkalan' ? 'Untuk Pemilik Pangkalan' : 
@@ -318,66 +321,66 @@ export default function LoginPage() {
 
             {/* Role Selection Modal */}
             {showRoleModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in-0 duration-200">
-                    <Card className="w-full max-w-md shadow-xl border-0 animate-in zoom-in-95 duration-200">
-                        <CardHeader className="text-center pb-6">
-                            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full mb-4">
-                                <Fish className="w-6 h-6 text-white" />
-                            </div>
-                            <CardTitle className="text-xl mb-2">Pilih Jenis Akun</CardTitle>
-                            <CardDescription className="text-gray-500">
-                                Ingin mendaftar sebagai apa?
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4 px-6">
-                            <Link href="/register?role=pangkalan">
-                                <Button 
-                                    className="w-full bg-blue-600 hover:bg-blue-700 h-16 text-base font-medium group"
-                                    onClick={() => setShowRoleModal(false)}
-                                >
-                                    <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center">
-                                            <Store className="w-5 h-5 mr-3" />
-                                            <div className="text-left">
-                                                <div>Pemilik Pangkalan</div>
-                                                <div className="text-xs text-blue-100 mt-1">Jual ikan online</div>
-                                            </div>
-                                        </div>
-                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                    </div>
-                                </Button>
-                            </Link>
-                            <Link href="/register?role=user">
-                                <Button 
-                                    variant="outline" 
-                                    className="w-full h-16 text-base font-medium border-2 hover:bg-orange-50 hover:border-orange-200 group"
-                                    onClick={() => setShowRoleModal(false)}
-                                >
-                                    <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center">
-                                            <Fish className="w-5 h-5 mr-3 text-orange-600" />
-                                            <div className="text-left">
-                                                <div className="text-gray-900">Pembeli Ikan</div>
-                                                <div className="text-xs text-gray-500 mt-1">Beli ikan segar</div>
-                                            </div>
-                                        </div>
-                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-orange-600" />
-                                    </div>
-                                </Button>
-                            </Link>
-                        </CardContent>
-                        <CardFooter className="pt-4 px-6">
-                            <Button 
-                                variant="ghost" 
-                                className="w-full text-gray-500 hover:text-gray-700"
-                                onClick={() => setShowRoleModal(false)}
-                            >
-                                Batal
-                            </Button>
-                        </CardFooter>
-                    </Card>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in-0 duration-200">
+        <Card className="w-full max-w-md shadow-xl border-0 animate-in zoom-in-95 duration-200">
+            <CardHeader className="text-center pb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-600 rounded-full mb-4">
+                    <Fish className="w-6 h-6 text-white" />
                 </div>
-            )}
+                <CardTitle className="text-xl mb-2">Pilih Jenis Akun</CardTitle>
+                <CardDescription className="text-gray-500">
+                    Ingin mendaftar sebagai apa?
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 px-6">
+                <Link href="/register?role=pangkalan">
+                    <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 h-16 text-base font-medium group"
+                        onClick={() => setShowRoleModal(false)}
+                    >
+                        <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center">
+                                <Store className="w-5 h-5 mr-3" />
+                                <div className="text-left">
+                                    <div>Pemilik Pangkalan</div>
+                                    <div className="text-xs text-blue-100 mt-1">Jual ikan online</div>
+                                </div>
+                            </div>
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                    </Button>
+                </Link>
+                <Link href="/register?role=user">
+                    <Button 
+                        variant="outline" 
+                        className="w-full h-16 text-base font-medium border-2 hover:bg-orange-50 hover:border-orange-200 group"
+                        onClick={() => setShowRoleModal(false)}
+                    >
+                        <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center">
+                                <Fish className="w-5 h-5 mr-3 text-orange-600" />
+                                <div className="text-left">
+                                    <div className="text-gray-900">Pembeli Ikan</div>
+                                    <div className="text-xs text-gray-500 mt-1">Beli ikan segar</div>
+                                </div>
+                            </div>
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-orange-600" />
+                        </div>
+                    </Button>
+                </Link>
+            </CardContent>
+            <CardFooter className="pt-4 px-6">
+                <Button 
+                    variant="ghost" 
+                    className="w-full text-gray-500 hover:text-gray-700"
+                    onClick={() => setShowRoleModal(false)}
+                >
+                    Batal
+                </Button>
+            </CardFooter>
+        </Card>
+    </div>
+)}
         </div>
     );
 }

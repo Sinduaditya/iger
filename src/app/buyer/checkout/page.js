@@ -640,7 +640,7 @@ export default function CheckoutPage() {
 
                                     <Button
                                         type="submit"
-                                        className="w-full mt-6"
+                                        className="w-full mt-6 bg-[#F37125] hover:bg-[#F37125]/90 text-white"
                                         disabled={submitting || !selectedAddressId}
                                     >
                                         {submitting ? (
