@@ -171,7 +171,7 @@ export default function ScanPage() {
 
         try {
             console.log('🚀 Starting analysis with AI model...');
-            
+
             const response = await fetch('/api/analyze-fish', {
                 method: 'POST',
                 body: formData,
@@ -184,14 +184,19 @@ export default function ScanPage() {
 
             const data = await response.json();
             console.log('✅ Analysis result:', data);
-            
-            setResult(data);
-            
+
+            // Masukkan prediction ke freshness
+            const resultData = {
+                ...data,
+                freshness: data.prediction // gunakan prediction sebagai freshness
+            };
+            setResult(resultData);
+
             // Save to Appwrite with additional model info
-            saveScanResultToAppwrite(data).catch(error => {
+            saveScanResultToAppwrite(resultData).catch(error => {
                 console.error('Save to Appwrite failed:', error);
             });
-            
+
             toast.success("Analisis berhasil!", { 
                 description: `Confidence: ${data.confidencePercent}%` 
             });
@@ -279,9 +284,9 @@ export default function ScanPage() {
 
     const getBadgeColor = (freshness) => {
     switch (freshness) {
-        case 'Segar': 
+        case 'Fresh': 
             return 'bg-green-600 text-white border-green-600';
-        case 'Tidak Segar': 
+        case 'Tidak Fresh': 
             return 'bg-red-600 text-white border-red-600';
         default: 
             return 'bg-gray-600 text-white border-gray-600';
