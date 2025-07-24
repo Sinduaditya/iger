@@ -84,7 +84,7 @@ export default function PangkalanDashboard() {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-8 h-8 border-4 border-[#125F95] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p>Memuat dashboard...</p>
                 </div>
             </div>
@@ -216,7 +216,7 @@ export default function PangkalanDashboard() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Status Stok</CardTitle>
@@ -273,33 +273,6 @@ export default function PangkalanDashboard() {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">Performa Driver</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-2">
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600">Total Pengiriman</span>
-                                <span className="text-sm font-medium">
-                                    {stats.drivers.totalDeliveries || 0}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600">Rating Rata-rata</span>
-                                <span className="text-sm font-medium text-yellow-600">
-                                    ⭐ {stats.drivers.avgRating || 0}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-sm text-gray-600">Driver Aktif</span>
-                                <span className="text-sm font-medium text-green-600">
-                                    {stats.drivers.available || 0}/{stats.drivers.total || 0}
-                                </span>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
             </div>
         </div>
     );

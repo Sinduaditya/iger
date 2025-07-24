@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Uji Coba API Kesegaran Ikan</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f2f5;
+      }
+      .container {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 90%;
+        max-width: 400px;
+      }
+      h3 {
+        margin-top: 0;
+        color: #1c1e21;
+      }
+      p {
+        color: #606770;
+      }
+      input[type="file"] {
+        margin-top: 1rem;
+        border: 1px solid #dddfe2;
+        padding: 0.5rem;
+        border-radius: 6px;
+        width: calc(100% - 1rem);
+      }
+      button {
+        background-color: #1877f2;
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: bold;
+        margin-top: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #166fe5;
+      }
+      #result-display {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        border: 1px dashed #dddfe2;
+        border-radius: 6px;
+        min-height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h3>Cek Kesegaran Ikan</h3>
+      <p>Upload gambar mata ikan untuk diperiksa oleh AI.</p>
+
+      <input type="file" id="image-uploader" accept="image/*" />
+      <button onclick="handlePrediction()">Cek Sekarang</button>
+
+      <div id="result-display">
+        <p>Hasil prediksi akan muncul di sini...</p>
+      </div>
+    </div>
+
+    <script>
+      async function handlePrediction() {
+        // URL API Anda di Hugging Face
+        const apiUrl = "https://jovansantosa-iger-fish.hf.space/predict";
+
+        // Ambil elemen dari HTML
+        const imageUploader = document.getElementById("image-uploader");
+        const resultDisplay = document.getElementById("result-display");
+
+        // Pastikan pengguna sudah memilih file
+        if (imageUploader.files.length === 0) {
+          resultDisplay.innerHTML =
+            '<p style="color: red;">Silakan pilih sebuah gambar terlebih dahulu.</p>';
+          return;
+        }
+
+        const file = imageUploader.files[0];
+
+        // Buat objek FormData untuk mengirim file
+        const formData = new FormData();
+        formData.append("file", file);
+
+        // Tampilkan status loading
+        resultDisplay.innerHTML = "<p>Menganalisis gambar...</p>";
+
+        try {
+          // Kirim request ke API Flask menggunakan fetch
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          // Tampilkan hasilnya di halaman
+          if (response.ok) {
+            const confidencePercent = (result.confidence * 100).toFixed(2);
+            resultDisplay.innerHTML = `
+                        <p><strong>Hasil:</strong> ${result.prediction}</p>
+                        <p><strong>Tingkat Keyakinan:</strong> ${confidencePercent}%</p>
+                    `;
+          } else {
+            // Tampilkan pesan error jika ada masalah dari server
+            resultDisplay.innerHTML = `<p style="color: red;">Error: ${result.error}</p>`;
+          }
+        } catch (error) {
+          // Tampilkan pesan error jika ada masalah jaringan atau lainnya
+          console.error("Fetch Error:", error);
+          resultDisplay.innerHTML =
+            '<p style="color: red;">Gagal terhubung ke server prediksi. Silakan coba lagi nanti.</p>';
+        }
+      }
+    </script>
+  </body>
+</html>

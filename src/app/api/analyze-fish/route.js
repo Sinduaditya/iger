@@ -1,30 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
-
-// Inisialisasi Gemini Client dengan API Key dari environment
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// Fungsi untuk mengubah buffer menjadi base64
-function bufferToGenerativePart(buffer, mimeType) {
-  return {
-    inlineData: {
-      data: buffer.toString("base64"),
-      mimeType,
-    },
-  };
-}
 
 export async function POST(request) {
   try {
-    // Validasi API Key
-    if (!process.env.GEMINI_API_KEY) {
-      console.error("GEMINI_API_KEY tidak ditemukan di environment variables");
-      return NextResponse.json(
-        { error: "Konfigurasi API tidak valid. Silakan hubungi administrator." }, 
-        { status: 500 }
-      );
-    }
-
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -49,62 +26,98 @@ export async function POST(request) {
       );
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const mimeType = file.type;
+    console.log('🚀 Starting fish analysis with Hugging Face model...');
+
+    // URL API Hugging Face Anda
+    const apiUrl = "https://jovansantosa-iger-fish.hf.space/predict";
     
-    // Pilih model Gemini yang mendukung input gambar
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Buat FormData untuk dikirim ke model
+    const modelFormData = new FormData();
+    modelFormData.append("file", file);
 
-    const prompt = `
-      Anda adalah seorang ahli perikanan dan juru masak berpengalaman. Analisis gambar ikan ini dengan cermat. 
-      Fokus pada mata, insang, sisik, dan tekstur daging jika terlihat.
-      Berikan jawaban HANYA dalam format JSON yang valid tanpa tambahan teks atau markdown apapun.
-      JSON harus memiliki struktur berikut:
-      {
-        "freshness": "Sangat Segar" | "Cukup Segar" | "Kurang Segar" | "Tidak Segar",
-        "reason": "Penjelasan singkat dan jelas mengapa ikan dinilai seperti itu (maksimal 20 kata)."
-      }
-    `;
+    console.log('📡 Sending request to Hugging Face model...');
 
-    const imagePart = bufferToGenerativePart(buffer, mimeType);
+    // Kirim request ke model Hugging Face
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      body: modelFormData,
+    });
 
-    const result = await model.generateContent([prompt, imagePart]);
-    const responseText = result.response.text();
-
-    console.log("Raw response from Gemini:", responseText);
-
-    // Bersihkan response dari markdown atau karakter tidak perlu
-    let cleanedResponse = responseText.trim();
-    if (cleanedResponse.startsWith('```json')) {
-      cleanedResponse = cleanedResponse.replace(/```json\n?/, '').replace(/\n?```$/, '');
-    }
-    if (cleanedResponse.startsWith('```')) {
-      cleanedResponse = cleanedResponse.replace(/```\n?/, '').replace(/\n?```$/, '');
+    if (!response.ok) {
+      console.error('❌ Hugging Face API error:', response.status, response.statusText);
+      throw new Error(`Model API error: ${response.status} ${response.statusText}`);
     }
 
-    // Pastikan responseText adalah JSON yang valid sebelum diparsing
-    const jsonResponse = JSON.parse(cleanedResponse);
+    const result = await response.json();
+    console.log('✅ Hugging Face model response:', result);
 
-    // Validasi struktur response
-    if (!jsonResponse.freshness || !jsonResponse.reason) {
-      throw new Error("Response format tidak valid dari AI");
+    // Validasi response dari model
+    if (!result.prediction || typeof result.confidence === 'undefined') {
+      console.error('❌ Invalid response format from model:', result);
+      throw new Error("Invalid response format from model");
     }
 
-    return NextResponse.json(jsonResponse);
+    // Konversi confidence ke persentase dan format response
+    const confidencePercent = (result.confidence * 100);
+    
+    // Mapping prediction ke format yang diharapkan aplikasi
+    let freshness;
+    let reason;
+    
+    // Sesuaikan dengan output model Anda - hanya Fresh atau Not Fresh
+    if (result.prediction.toLowerCase().includes('fresh') || 
+        result.prediction.toLowerCase().includes('segar')) {
+      freshness = 'Segar';
+      reason = `Model AI mendeteksi ikan segar dengan tingkat keyakinan ${confidencePercent.toFixed(1)}%`;
+    } else {
+      freshness = 'Tidak Segar';
+      reason = `Model AI mendeteksi ikan tidak segar dengan tingkat keyakinan ${confidencePercent.toFixed(1)}%`;
+    }
+
+    // Format response sesuai dengan struktur yang diharapkan
+    const analysisResult = {
+      freshness: freshness,
+      reason: reason,
+      confidence: result.confidence,
+      confidencePercent: confidencePercent.toFixed(1),
+      prediction: result.prediction,
+      model_source: 'huggingface',
+      api_url: apiUrl
+    };
+
+    console.log('📊 Final analysis result:', analysisResult);
+
+    return NextResponse.json(analysisResult);
 
   } catch (error) {
-    console.error("Error di API Route Gemini:", error);
+    console.error("❌ Error in fish analysis API:", error);
     
-    // Berikan response yang lebih informatif berdasarkan jenis error
-    if (error instanceof SyntaxError) {
+    // Error handling yang lebih spesifik
+    if (error.message.includes('fetch')) {
       return NextResponse.json(
-        { error: "Gagal memproses response AI. Silakan coba lagi." },
-        { status: 500 }
+        { 
+          error: "Gagal terhubung ke model AI. Silakan coba lagi.", 
+          details: "Network connection error"
+        },
+        { status: 503 }
       );
     }
     
+    if (error.message.includes('Model API error')) {
+      return NextResponse.json(
+        { 
+          error: "Model AI sedang tidak tersedia. Silakan coba lagi nanti.", 
+          details: error.message
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Gagal menganalisis gambar. Silakan coba lagi." },
+      { 
+        error: "Gagal menganalisis gambar. Silakan coba lagi.", 
+        details: error.message 
+      },
       { status: 500 }
     );
   }

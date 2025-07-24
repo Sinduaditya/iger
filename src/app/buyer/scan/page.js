@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Fish, BrainCircuit, Loader, AlertCircle, Sparkles, RotateCcw, Camera, MapPin, CheckCircle2, Zap } from 'lucide-react';
+import { Upload, Fish, BrainCircuit, Loader, AlertCircle, Sparkles, RotateCcw, Camera, MapPin, CheckCircle2, Zap, TrendingUp, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { scanResultsService } from '@/lib/appwrite';
@@ -170,6 +170,8 @@ export default function ScanPage() {
         formData.append('file', file);
 
         try {
+            console.log('🚀 Starting analysis with AI model...');
+            
             const response = await fetch('/api/analyze-fish', {
                 method: 'POST',
                 body: formData,
@@ -181,15 +183,21 @@ export default function ScanPage() {
             }
 
             const data = await response.json();
+            console.log('✅ Analysis result:', data);
+            
             setResult(data);
             
+            // Save to Appwrite with additional model info
             saveScanResultToAppwrite(data).catch(error => {
                 console.error('Save to Appwrite failed:', error);
             });
             
-            toast.success("Analisis berhasil!");
+            toast.success("Analisis berhasil!", { 
+                description: `Confidence: ${data.confidencePercent}%` 
+            });
 
         } catch (err) {
+            console.error('❌ Analysis error:', err);
             setError(err.message);
             toast.error("Analisis Gagal", { description: err.message });
         } finally {
@@ -207,13 +215,17 @@ export default function ScanPage() {
             const scanData = {
                 freshness: result.freshness,
                 reason: result.reason,
+                confidence: result.confidence,
+                confidence_percent: result.confidencePercent,
+                prediction: result.prediction,
+                model_source: result.model_source || 'huggingface',
                 latitude: location?.latitude || null,
                 longitude: location?.longitude || null,
                 location_address: location?.address || null
             };
 
             await scanResultsService.createScanResult(user.$id, scanData);
-            console.log('Scan result saved to Appwrite successfully');
+            console.log('✅ Scan result saved to Appwrite successfully');
             
             setTimeout(() => {
                 toast.success("Hasil scan telah disimpan", { 
@@ -222,7 +234,7 @@ export default function ScanPage() {
             }, 1000);
             
         } catch (error) {
-            console.error('Error saving scan result to Appwrite:', error);
+            console.error('❌ Error saving scan result to Appwrite:', error);
             
             if (error.code === 401) {
                 toast.error("Gagal menyimpan", { 
@@ -266,18 +278,14 @@ export default function ScanPage() {
     };
 
     const getBadgeColor = (freshness) => {
-        switch (freshness) {
-            case 'Sangat Segar': 
-                return 'bg-green-600 text-white border-green-600';
-            case 'Cukup Segar': 
-                return 'bg-yellow-500 text-white border-yellow-500';
-            case 'Kurang Segar': 
-                return 'bg-orange-600 text-white border-orange-600';
-            case 'Tidak Segar': 
-                return 'bg-red-600 text-white border-red-600';
-            default: 
-                return 'bg-gray-600 text-white border-gray-600';
-        }
+    switch (freshness) {
+        case 'Segar': 
+            return 'bg-green-600 text-white border-green-600';
+        case 'Tidak Segar': 
+            return 'bg-red-600 text-white border-red-600';
+        default: 
+            return 'bg-gray-600 text-white border-gray-600';
+      }
     };
 
     const handleGetLocation = async () => {
@@ -291,9 +299,17 @@ export default function ScanPage() {
         }
     };
 
+    const getConfidenceColor = (confidence) => {
+        const confidencePercent = parseFloat(confidence);
+        if (confidencePercent >= 90) return 'text-green-600';
+        if (confidencePercent >= 70) return 'text-yellow-600';
+        if (confidencePercent >= 50) return 'text-orange-600';
+        return 'text-red-600';
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Clean Header */}
+            {/* Clean Header with AI Model Info */}
             <div className="bg-white border-b border-gray-200 shadow-sm">
                 <div className="max-w-4xl mx-auto px-6 py-12">
                     <div className="text-center">
@@ -303,21 +319,25 @@ export default function ScanPage() {
                         <h1 className="text-4xl font-bold text-gray-900 mb-4">
                             AI Fish Scanner
                         </h1>
-                        <p className="text-xl text-gray-600 mb-8">
-                            Teknologi AI untuk menganalisis kesegaran ikan secara instant
+                        <p className="text-xl text-gray-600 mb-6">
+                            Teknologi Deep Learning untuk analisis kesegaran ikan yang akurat
                         </p>
-                        <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
+                        <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-800 px-4 py-2 rounded-full font-medium">
+                            <Zap className="w-4 h-4" />
+                            Powered by Custom AI Model
+                        </div>
+                        <div className="flex items-center justify-center gap-8 text-sm text-gray-600 mt-6">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-                                <span className="font-medium">Analisis Cepat</span>
+                                <span className="font-medium">Deep Learning</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-                                <span className="font-medium">AI Powered</span>
+                                <span className="font-medium">High Accuracy</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-                                <span className="font-medium">Akurat</span>
+                                <span className="font-medium">Real-time</span>
                             </div>
                         </div>
                     </div>
@@ -419,14 +439,7 @@ export default function ScanPage() {
                                         </div>
                                         
                                         <div className="flex gap-3">
-                                            <Button 
-                                                onClick={() => fileInputRef.current?.click()} 
-                                                variant="outline" 
-                                                className="flex-1 border-orange-600 text-orange-600 hover:bg-orange-50"
-                                            >
-                                                <Upload className="mr-2 h-4 w-4" />
-                                                Ganti Gambar
-                                            </Button>
+                                            
                                             
                                             {!isLoading && !result && (
                                                 <Button 
@@ -470,10 +483,10 @@ export default function ScanPage() {
                                     <div className="text-center p-12 bg-orange-50 rounded-xl border border-orange-200">
                                         <Loader className="mx-auto h-16 w-16 text-orange-600 animate-spin mb-6" />
                                         <h3 className="text-xl font-bold text-gray-900 mb-3">
-                                            AI Sedang Menganalisis...
+                                            AI Model Sedang Menganalisis...
                                         </h3>
                                         <p className="text-orange-600 font-medium">
-                                            Mohon tunggu beberapa saat
+                                            Deep learning model sedang memproses gambar
                                         </p>
                                         <div className="mt-4 flex justify-center">
                                             <div className="flex space-x-1">
@@ -513,15 +526,52 @@ export default function ScanPage() {
                                                 {result.freshness}
                                             </Badge>
                                             
-                                            <div className="mt-8 p-6 bg-white rounded-xl border border-gray-200">
+                                            {/* Confidence Score */}
+                                            <div className="mt-6 p-6 bg-white rounded-xl border border-gray-200">
+                                                <div className="flex items-center justify-center gap-3 mb-4">
+                                                    <div className="p-2 bg-blue-100 rounded-lg">
+                                                        <BarChart3 className="h-5 w-5 text-blue-600" />
+                                                    </div>
+                                                    <h4 className="font-semibold text-gray-900">Tingkat Keyakinan AI</h4>
+                                                </div>
+                                                <div className={`text-4xl font-bold ${getConfidenceColor(result.confidencePercent)} mb-2`}>
+                                                    {result.confidencePercent}%
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                                                    <div 
+                                                        className={`h-3 rounded-full transition-all duration-1000 ${
+                                                            parseFloat(result.confidencePercent) >= 90 ? 'bg-green-600' :
+                                                            parseFloat(result.confidencePercent) >= 70 ? 'bg-yellow-500' :
+                                                            parseFloat(result.confidencePercent) >= 50 ? 'bg-orange-600' :
+                                                            'bg-red-600'
+                                                        }`}
+                                                        style={{ width: `${result.confidencePercent}%` }}
+                                                    ></div>
+                                                </div>
+                                                <p className="text-sm text-gray-600">
+                                                    Model Prediction: <span className="font-medium">{result.prediction}</span>
+                                                </p>
+                                            </div>
+                                            
+                                            <div className="mt-6 p-6 bg-white rounded-xl border border-gray-200">
                                                 <div className="flex items-start gap-3 text-gray-700">
                                                     <div className="p-2 bg-orange-100 rounded-lg mt-1">
                                                         <Fish className="h-5 w-5 text-orange-600" />
                                                     </div>
                                                     <div className="text-left flex-1">
-                                                        <p className="font-semibold text-gray-900 mb-2">Penjelasan AI:</p>
+                                                        <p className="font-semibold text-gray-900 mb-2">Analisis AI:</p>
                                                         <p className="text-gray-700 leading-relaxed italic">"{result.reason}"</p>
                                                     </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Model Info */}
+                                            <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                                <div className="flex items-center justify-center gap-2 text-blue-700">
+                                                    <Zap className="h-4 w-4" />
+                                                    <span className="text-sm font-medium">
+                                                        Analyzed by Custom Deep Learning Model
+                                                    </span>
                                                 </div>
                                             </div>
 

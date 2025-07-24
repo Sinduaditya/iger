@@ -145,7 +145,7 @@ export default function DriversPage() {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-8 h-8 border-4 border-[#125F95] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p>Memuat data driver...</p>
                 </div>
             </div>
@@ -162,7 +162,7 @@ export default function DriversPage() {
                 </div>
                 <Button 
                     onClick={() => handleOpenModal()}
-                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                    className="bg-[#125F95] hover:bg-[#125F95]/80 text-white"
                 >
                     <Plus className="w-4 h-4 mr-2" />
                     Tambah Driver
@@ -177,7 +177,7 @@ export default function DriversPage() {
                     placeholder="Cari driver (nama, telepon, plat nomor)..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125F95] focus:border-transparent"
                 />
             </div>
 
@@ -227,7 +227,7 @@ export default function DriversPage() {
                                 {/* Driver Header */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center">
+                                        <div className="w-12 h-12 bg-[#125F95] rounded-full flex items-center justify-center">
                                             <span className="text-white font-medium text-lg">
                                                 {driver.name.charAt(0).toUpperCase()}
                                             </span>
@@ -326,7 +326,7 @@ export default function DriversPage() {
                     </p>
                     <Button 
                         onClick={() => handleOpenModal()}
-                        className="bg-orange-600 hover:bg-orange-700"
+                        className="bg-[#125F95] hover:bg-[#125F95]/80"
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Tambah Driver Pertama
@@ -384,7 +384,7 @@ export default function DriversPage() {
                                     value={formData.vehicle_type}
                                     onChange={(e) => setFormData({...formData, vehicle_type: e.target.value})}
                                     required
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#125F95] focus:border-transparent"
                                 >
                                     <option value="">Pilih jenis kendaraan</option>
                                     <option value="Motor">Motor</option>
@@ -409,7 +409,7 @@ export default function DriversPage() {
                                     type="checkbox"
                                     checked={formData.is_available}
                                     onChange={(e) => setFormData({...formData, is_available: e.target.checked})}
-                                    className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                                    className="rounded border-gray-300 text-orange-600 focus:ring-[#125F95]"
                                 />
                                 <label className="text-sm font-medium">Driver tersedia</label>
                             </div>
@@ -425,7 +425,7 @@ export default function DriversPage() {
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="flex-1 bg-orange-600 hover:bg-orange-700"
+                                    className="flex-1 bg-[#125F95] hover:bg-[#125F95]/80"
                                 >
                                     {editingDriver ? 'Update Driver' : 'Simpan Driver'}
                                 </Button>

@@ -304,7 +304,7 @@ export default function ProductsPage() {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-8 h-8 border-4 border-[#125F95] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p>Memuat produk...</p>
                 </div>
             </div>
@@ -321,7 +321,7 @@ export default function ProductsPage() {
                 </div>
                 <Button 
                     onClick={() => handleOpenModal()}
-                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                    className="bg-[#125F95] hover:bg-[#0D253C] text-white"
                 >
                     <Plus className="w-4 h-4 mr-2" />
                     Tambah Produk
@@ -336,7 +336,7 @@ export default function ProductsPage() {
                     placeholder="Cari produk..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#125F95] focus:border-transparent"
                 />
             </div>
 
@@ -349,7 +349,7 @@ export default function ProductsPage() {
                                 <p className="text-sm text-gray-600">Total Produk</p>
                                 <p className="text-2xl font-bold">{stats.total || 0}</p>
                             </div>
-                            <Package className="w-8 h-8 text-blue-600" />
+                            <Package className="w-8 h-8 text-[#125F95]" />
                         </div>
                     </CardContent>
                 </Card>
@@ -392,11 +392,11 @@ export default function ProductsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
                     <Card key={product.$id} className="overflow-hidden">
-                        <div className="aspect-video bg-gray-200 relative">
+                        <div className="aspect-video mx-2 bg-gray-200 relative rounded-xl overflow-hidden flex items-center justify-center">
                             <img 
                                 src={product.image_url || 'https://images.unsplash.com/photo-1497671954146-59a89ff626ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'} 
                                 alt={product.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover transition-all duration-300"
                                 onError={(e) => {
                                     e.target.src = 'https://images.unsplash.com/photo-1497671954146-59a89ff626ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
                                 }}
@@ -419,7 +419,7 @@ export default function ProductsPage() {
                                 <h3 className="font-semibold text-lg">{product.name}</h3>
                                 <p className="text-sm text-gray-600">{product.category}</p>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-lg font-bold text-orange-600">
+                                    <span className="text-lg font-bold text-[#125F95]">
                                         Rp {product.price.toLocaleString()}
                                     </span>
                                     <span className="text-sm text-gray-500">/{product.unit}</span>
@@ -440,7 +440,7 @@ export default function ProductsPage() {
                                 {/* Tampilkan alamat jika ada koordinat */}
                                 {(product.latitude && product.longitude) && (
                                     <div className="flex items-start gap-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-md">
-                                        <MapPin className="w-4 h-4 mt-0.5 text-orange-600 flex-shrink-0" />
+                                        <MapPin className="w-4 h-4 mt-0.5 text-[#125F95] flex-shrink-0" />
                                         <span className="line-clamp-2">{getProductAddress(product)}</span>
                                     </div>
                                 )}
@@ -452,7 +452,7 @@ export default function ProductsPage() {
                                     <Button 
                                         variant="outline" 
                                         size="sm" 
-                                        className="flex-1"
+                                        className="flex-1 border-[#125F95] text-[#125F95] hover:bg-[#125F95] hover:text-white"
                                         onClick={() => handleOpenModal(product)}
                                     >
                                         <Edit className="w-4 h-4 mr-1" />
@@ -461,7 +461,7 @@ export default function ProductsPage() {
                                     <Button 
                                         variant="outline" 
                                         size="sm" 
-                                        className="text-red-600 hover:bg-red-50"
+                                        className="text-red-600 hover:bg-red-50 border-red-300"
                                         onClick={() => handleDeleteProduct(product.$id)}
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -482,7 +482,7 @@ export default function ProductsPage() {
                     </p>
                     <Button 
                         onClick={() => handleOpenModal()}
-                        className="bg-orange-600 hover:bg-orange-700"
+                        className="bg-[#125F95] hover:bg-[#0D253C]"
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Tambah Produk Pertama
@@ -492,7 +492,7 @@ export default function ProductsPage() {
 
             {/* Modal Add/Edit Product */}
             {showModal && (
-                <div className="fixed inset-0  bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between p-6 border-b">
                             <h2 className="text-xl font-semibold">
@@ -520,7 +520,7 @@ export default function ProductsPage() {
                                         value={formData.category}
                                         onChange={(e) => setFormData({...formData, category: e.target.value})}
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#125F95] focus:border-transparent"
                                     >
                                         <option value="">Pilih kategori</option>
                                         <option value="Ikan Laut">Ikan Laut</option>
@@ -545,7 +545,7 @@ export default function ProductsPage() {
                                         value={formData.unit}
                                         onChange={(e) => setFormData({...formData, unit: e.target.value})}
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#125F95] focus:border-transparent"
                                     >
                                         <option value="">Pilih unit</option>
                                         <option value="kg">Kilogram (kg)</option>
@@ -569,7 +569,7 @@ export default function ProductsPage() {
                                     <select
                                         value={formData.freshness_level}
                                         onChange={(e) => setFormData({...formData, freshness_level: e.target.value})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#125F95] focus:border-transparent"
                                     >
                                         <option value="">Pilih tingkat kesegaran</option>
                                         <option value="Sangat Segar">Sangat Segar</option>
@@ -589,7 +589,7 @@ export default function ProductsPage() {
                                         size="sm"
                                         onClick={getCurrentLocation}
                                         disabled={gettingLocation}
-                                        className="flex items-center gap-2"
+                                        className="flex items-center gap-2 border-[#125F95] text-[#125F95] hover:bg-[#125F95] hover:text-white"
                                     >
                                         {gettingLocation ? (
                                             <Loader className="w-4 h-4 animate-spin" />
@@ -625,14 +625,14 @@ export default function ProductsPage() {
 
                                 {/* Address Display */}
                                 {(formData.latitude && formData.longitude) && (
-                                    <div className="p-4 bg-gray-50 rounded-lg border">
+                                    <div className="p-4 bg-gray-50 rounded-lg border border-[#125F95]/20">
                                         <div className="flex items-start gap-3">
-                                            <MapPin className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                                            <MapPin className="w-5 h-5 text-[#125F95] mt-0.5 flex-shrink-0" />
                                             <div className="flex-1">
                                                 <p className="text-sm font-medium text-gray-900 mb-1">Alamat:</p>
                                                 {addressLoading ? (
                                                     <div className="flex items-center gap-2">
-                                                        <Loader className="w-4 h-4 animate-spin text-orange-600" />
+                                                        <Loader className="w-4 h-4 animate-spin text-[#125F95]" />
                                                         <span className="text-sm text-gray-600">Mengambil alamat...</span>
                                                     </div>
                                                 ) : (
@@ -650,7 +650,7 @@ export default function ProductsPage() {
                                     value={formData.description}
                                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                                     rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#125F95] focus:border-transparent"
                                     placeholder="Masukkan deskripsi produk"
                                 />
                             </div>
@@ -669,7 +669,7 @@ export default function ProductsPage() {
                                     type="checkbox"
                                     checked={formData.is_available}
                                     onChange={(e) => setFormData({...formData, is_available: e.target.checked})}
-                                    className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                                    className="rounded border-gray-300 text-[#125F95] focus:ring-[#125F95]"
                                 />
                                 <label className="text-sm font-medium">Produk tersedia</label>
                             </div>
@@ -685,7 +685,7 @@ export default function ProductsPage() {
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="flex-1 bg-orange-600 hover:bg-orange-700"
+                                    className="flex-1 bg-[#125F95] hover:bg-[#0D253C]"
                                 >
                                     {editingProduct ? 'Update Produk' : 'Simpan Produk'}
                                 </Button>
