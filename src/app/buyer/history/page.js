@@ -122,15 +122,15 @@ export default function HistoryPage() {
 
     const filterOptions = [
         { value: 'all', label: 'Semua Hasil', icon: Archive },
-        { value: 'segar', label: 'Segar', icon: CheckCircle2 },
-        { value: 'tidak_segar', label: 'Tidak Segar', icon: Archive }
+        { value: 'Fresh', label: 'Segar', icon: CheckCircle2 },
+        { value: 'Tidak Fresh', label: 'Tidak Fresh', icon: Archive }
     ];
 
     // Statistics calculation
     const stats = {
         total: scanHistory.length,
-        segar: scanHistory.filter(item => item.freshness === 'Segar').length,
-        tidakSegar: scanHistory.filter(item => item.freshness === 'Tidak Segar').length
+        segar: scanHistory.filter(item => item.freshness === 'Fresh').length,
+        tidakSegar: scanHistory.filter(item => item.freshness === 'Tidak Fresh').length
     };
 
     if (loading) {
