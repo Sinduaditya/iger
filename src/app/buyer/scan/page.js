@@ -183,7 +183,7 @@ export default function ScanPage() {
             }
         
             const data = await response.json();
-            console.log('✅ Analysis result:', data);
+            // console.log('✅ Analysis result:', data);
         
             // Isi freshness dari prediction
             const resultData = {

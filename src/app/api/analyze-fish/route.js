@@ -68,10 +68,10 @@ export async function POST(request) {
     if (result.prediction.toLowerCase().includes('fresh') || 
         result.prediction.toLowerCase().includes('segar')) {
       freshness = 'Segar';
-      reason = `Model AI mendeteksi ikan segar dengan tingkat keyakinan ${confidencePercent.toFixed(1)}%`;
+      reason = `Model AI mendeteksi ikan dengan tingkat keyakinan ${confidencePercent.toFixed(1)}%`;
     } else {
       freshness = 'Tidak Segar';
-      reason = `Model AI mendeteksi ikan tidak segar dengan tingkat keyakinan ${confidencePercent.toFixed(1)}%`;
+      reason = `Model AI mendeteksi ikan dengan dengan tingkat keyakinan ${confidencePercent.toFixed(1)}%`;
     }
 
     // Format response sesuai dengan struktur yang diharapkan
