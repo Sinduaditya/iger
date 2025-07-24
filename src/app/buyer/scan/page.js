@@ -161,46 +161,45 @@ export default function ScanPage() {
             toast.error("Silakan pilih gambar terlebih dahulu.");
             return;
         }
-
+    
         setIsLoading(true);
         setResult(null);
         setError(null);
-
+    
         const formData = new FormData();
         formData.append('file', file);
-
+    
         try {
             console.log('🚀 Starting analysis with AI model...');
-
+        
             const response = await fetch('/api/analyze-fish', {
                 method: 'POST',
                 body: formData,
             });
-
+        
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Terjadi kesalahan pada server.');
             }
-
+        
             const data = await response.json();
             console.log('✅ Analysis result:', data);
-
-            // Masukkan prediction ke freshness
+        
+            // Isi freshness dari prediction
             const resultData = {
                 ...data,
-                freshness: data.prediction // gunakan prediction sebagai freshness
+                freshness: data.prediction // Fresh/Tidak Fresh
             };
             setResult(resultData);
-
-            // Save to Appwrite with additional model info
+        
             saveScanResultToAppwrite(resultData).catch(error => {
                 console.error('Save to Appwrite failed:', error);
             });
-
+        
             toast.success("Analisis berhasil!", { 
                 description: `Confidence: ${data.confidencePercent}%` 
             });
-
+        
         } catch (err) {
             console.error('❌ Analysis error:', err);
             setError(err.message);
@@ -209,6 +208,7 @@ export default function ScanPage() {
             setIsLoading(false);
         }
     };
+
 
     const saveScanResultToAppwrite = async (result) => {
         try {
@@ -282,15 +282,8 @@ export default function ScanPage() {
         setPreview(null);
     };
 
-    const getBadgeColor = (freshness) => {
-    switch (freshness) {
-        case 'Fresh': 
-            return 'bg-green-600 text-white border-green-600';
-        case 'Tidak Fresh': 
-            return 'bg-red-600 text-white border-red-600';
-        default: 
-            return 'bg-gray-600 text-white border-gray-600';
-      }
+    const getBadgeColor = (freshness) => {  
+        return 'bg-gray-200 text-gray-900 border-gray-300';
     };
 
     const handleGetLocation = async () => {
@@ -519,19 +512,20 @@ export default function ScanPage() {
                                     <div className="space-y-6">
                                         <div className="text-center p-8 bg-gray-50 rounded-xl border border-gray-200">
                                             <div className="mb-6">
-                                                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-600 rounded-full mb-4">
+                                                <div className={`inline-flex items-center justify-center w-16 h-16 ${result.freshness === 'Fresh' ? 'bg-green-600' : 'bg-red-600'} rounded-full mb-4`}>
                                                     <CheckCircle2 className="w-8 h-8 text-white" />
                                                 </div>
                                                 <h3 className="text-2xl font-bold mb-4 text-gray-900">
                                                     Analisis Selesai
                                                 </h3>
                                             </div>
-                                            
+
+                                            {/* Tampilkan Fresh/Tidak Fresh dari prediction */}
                                             <Badge className={`text-xl px-8 py-4 font-bold rounded-lg ${getBadgeColor(result.freshness)}`}>
                                                 {result.freshness}
                                             </Badge>
-                                            
-                                            {/* Confidence Score */}
+
+                                            {/* Confidence Score tanpa warna tambahan */}
                                             <div className="mt-6 p-6 bg-white rounded-xl border border-gray-200">
                                                 <div className="flex items-center justify-center gap-3 mb-4">
                                                     <div className="p-2 bg-blue-100 rounded-lg">
@@ -539,60 +533,13 @@ export default function ScanPage() {
                                                     </div>
                                                     <h4 className="font-semibold text-gray-900">Tingkat Keyakinan AI</h4>
                                                 </div>
-                                                <div className={`text-4xl font-bold ${getConfidenceColor(result.confidencePercent)} mb-2`}>
+                                                <div className="text-4xl font-bold mb-2">
                                                     {result.confidencePercent}%
-                                                </div>
-                                                <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                                                    <div 
-                                                        className={`h-3 rounded-full transition-all duration-1000 ${
-                                                            parseFloat(result.confidencePercent) >= 90 ? 'bg-green-600' :
-                                                            parseFloat(result.confidencePercent) >= 70 ? 'bg-yellow-500' :
-                                                            parseFloat(result.confidencePercent) >= 50 ? 'bg-orange-600' :
-                                                            'bg-red-600'
-                                                        }`}
-                                                        style={{ width: `${result.confidencePercent}%` }}
-                                                    ></div>
                                                 </div>
                                                 <p className="text-sm text-gray-600">
                                                     Model Prediction: <span className="font-medium">{result.prediction}</span>
                                                 </p>
                                             </div>
-                                            
-                                            <div className="mt-6 p-6 bg-white rounded-xl border border-gray-200">
-                                                <div className="flex items-start gap-3 text-gray-700">
-                                                    <div className="p-2 bg-orange-100 rounded-lg mt-1">
-                                                        <Fish className="h-5 w-5 text-orange-600" />
-                                                    </div>
-                                                    <div className="text-left flex-1">
-                                                        <p className="font-semibold text-gray-900 mb-2">Analisis AI:</p>
-                                                        <p className="text-gray-700 leading-relaxed italic">"{result.reason}"</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Model Info */}
-                                            <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                                                <div className="flex items-center justify-center gap-2 text-blue-700">
-                                                    <Zap className="h-4 w-4" />
-                                                    <span className="text-sm font-medium">
-                                                        Analyzed by Custom Deep Learning Model
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {location && (
-                                                <div className="mt-6 p-6 bg-blue-50 rounded-xl border border-blue-200">
-                                                    <div className="flex items-start gap-3 text-blue-700">
-                                                        <div className="p-2 bg-blue-200 rounded-lg mt-1">
-                                                            <MapPin className="h-5 w-5 text-blue-700" />
-                                                        </div>
-                                                        <div className="text-left flex-1">
-                                                            <p className="font-semibold text-blue-900 mb-1">Lokasi Scan:</p>
-                                                            <p className="text-blue-700 text-sm">{location.address}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
                                         </div>
                                     </div>
                                 )}
