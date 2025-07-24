@@ -286,7 +286,7 @@ export default function HomePage() {
 
 
               <div className="text-center bg-[#FFFFFF] p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-16 h-16 bg-[#125F95] rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-[#F37125] rounded-full flex items-center justify-center mx-auto mb-4">
                   <Truck className="w-8 h-8 text-[#FFFFFF]" />
                 </div>
                 <h4 className="font-semibold text-lg mb-2 text-[#0D253C]">2. Pengiriman</h4>
@@ -294,7 +294,7 @@ export default function HomePage() {
               </div>
 
               <div className="text-center bg-[#FFFFFF] p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-16 h-16 bg-[#F37125] rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16  bg-[#125F95] rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 text-[#FFFFFF]" />
                 </div>
                 <h4 className="font-semibold text-lg mb-2 text-[#0D253C]">3. Nikmati</h4>
@@ -318,69 +318,69 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
               {/* Card untuk Pembeli */}
-              <Card className="border border-[#F4F6F8] hover:border-[#125F95] transition-all duration-300 hover:shadow-lg">
-                <CardHeader className="pb-4">
-                  <div className="w-16 h-16 bg-[#125F95] rounded-xl flex items-center justify-center mb-4">
-                    <Users className="w-8 h-8 text-[#FFFFFF]" />
-                  </div>
-                  <CardTitle className="text-xl text-[#0D253C]">Untuk Pembeli</CardTitle>
-                  <p className="text-[#125F95]">Konsumen yang ingin membeli ikan segar</p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center text-sm text-[#125F95]">
-                    <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
-                    <span>Katalog ikan dari berbagai pangkalan</span>
-                  </div>
-                  <div className="flex items-center text-sm text-[#125F95]">
-                    <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
-                    <span>AI scan untuk cek kesegaran</span>
-                  </div>
-                  <div className="flex items-center text-sm text-[#125F95]">
-                    <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
-                    <span>Tracking pengiriman real-time</span>
-                  </div>
-                  <div className="flex items-center text-sm text-[#125F95]">
-                    <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
-                    <span>Jaminan kualitas dan kesegaran</span>
-                  </div>
-
-                  <Button className="w-full mt-6 bg-[#125F95] hover:bg-[#0D253C] text-[#FFFFFF]">
-                    <Link href="/register?role=user">Daftar sebagai Pembeli</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Card untuk Pangkalan */}
               <Card className="border border-[#F4F6F8] hover:border-[#F37125] transition-all duration-300 hover:shadow-lg">
-                <CardHeader className="pb-4">
-                  <div className="w-16 h-16 bg-[#F37125] rounded-xl flex items-center justify-center mb-4">
-                    <Store className="w-8 h-8 text-[#FFFFFF]" />
-                  </div>
-                  <CardTitle className="text-xl text-[#0D253C]">Untuk Pangkalan</CardTitle>
-                  <p className="text-[#125F95]">Hub yang mengelola stok dan pengiriman</p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center text-sm text-[#125F95]">
-                    <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
-                    <span>Kelola katalog dan stok ikan</span>
-                  </div>
-                  <div className="flex items-center text-sm text-[#125F95]">
-                    <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
-                    <span>Dashboard manajemen pesanan</span>
-                  </div>
-                  <div className="flex items-center text-sm text-[#125F95]">
-                    <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
-                    <span>Kelola driver pengiriman</span>
-                  </div>
-                  <div className="flex items-center text-sm text-[#125F95]">
-                    <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
-                    <span>Analitik penjualan mendalam</span>
-                  </div>
+  <CardHeader className="pb-4">
+    <div className="w-16 h-16 bg-[#F37125] rounded-xl flex items-center justify-center mb-4">
+      <Users className="w-8 h-8 text-[#FFFFFF]" />
+    </div>
+    <CardTitle className="text-xl text-[#0D253C]">Untuk Pembeli</CardTitle>
+    <p className="text-[#F37125]">Konsumen yang ingin membeli ikan segar</p>
+  </CardHeader>
+  <CardContent className="space-y-3">
+    <div className="flex items-center text-sm text-[#F37125]">
+      <CheckCircle className="w-4 h-4 text-[#125F95] mr-3 flex-shrink-0" />
+      <span>Katalog ikan dari berbagai pangkalan</span>
+    </div>
+    <div className="flex items-center text-sm text-[#F37125]">
+      <CheckCircle className="w-4 h-4 text-[#125F95] mr-3 flex-shrink-0" />
+      <span>AI scan untuk cek kesegaran</span>
+    </div>
+    <div className="flex items-center text-sm text-[#F37125]">
+      <CheckCircle className="w-4 h-4 text-[#125F95] mr-3 flex-shrink-0" />
+      <span>Tracking pengiriman real-time</span>
+    </div>
+    <div className="flex items-center text-sm text-[#F37125]">
+      <CheckCircle className="w-4 h-4 text-[#125F95] mr-3 flex-shrink-0" />
+      <span>Jaminan kualitas dan kesegaran</span>
+    </div>
 
-                  <Button className="w-full mt-6 bg-[#F37125] hover:bg-[#F37125]/90 text-[#FFFFFF]">
-                    <Link href="/register?role=pangkalan">Daftar sebagai Pangkalan</Link>
-                  </Button>
-                </CardContent>
+    <Button className="w-full mt-6 bg-[#F37125] hover:bg-[#F37125]/90 text-[#FFFFFF]">
+      <Link href="/register?role=user">Daftar sebagai Pembeli</Link>
+    </Button>
+  </CardContent>
+              </Card>
+                        
+              {/* Card untuk Pangkalan */}
+              <Card className="border border-[#F4F6F8] hover:border-[#125F95] transition-all duration-300 hover:shadow-lg">
+  <CardHeader className="pb-4">
+    <div className="w-16 h-16 bg-[#125F95] rounded-xl flex items-center justify-center mb-4">
+      <Store className="w-8 h-8 text-[#FFFFFF]" />
+    </div>
+    <CardTitle className="text-xl text-[#0D253C]">Untuk Pangkalan</CardTitle>
+    <p className="text-[#125F95]">Hub yang mengelola stok dan pengiriman</p>
+  </CardHeader>
+  <CardContent className="space-y-3">
+    <div className="flex items-center text-sm text-[#125F95]">
+      <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
+      <span>Kelola katalog dan stok ikan</span>
+    </div>
+    <div className="flex items-center text-sm text-[#125F95]">
+      <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
+      <span>Dashboard manajemen pesanan</span>
+    </div>
+    <div className="flex items-center text-sm text-[#125F95]">
+      <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
+      <span>Kelola driver pengiriman</span>
+    </div>
+    <div className="flex items-center text-sm text-[#125F95]">
+      <CheckCircle className="w-4 h-4 text-[#F37125] mr-3 flex-shrink-0" />
+      <span>Analitik penjualan mendalam</span>
+    </div>
+
+    <Button className="w-full mt-6 bg-[#125F95] hover:bg-[#0D253C] text-[#FFFFFF]">
+      <Link href="/register?role=pangkalan">Daftar sebagai Pangkalan</Link>
+    </Button>
+  </CardContent>
               </Card>
             </div>
           </div>

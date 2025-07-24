@@ -47,14 +47,14 @@ export default function LoginPage() {
 
     // Theme configuration based on role
     const getThemeConfig = (role) => {
-        if (role === 'user') {
+    if (role === 'pangkalan') {
             return {
-                primary: 'bg-blue-600 hover:bg-blue-700',
-                secondary: 'bg-blue-100 text-blue-700',
-                accent: 'text-blue-600',
-                border: 'border-blue-200',
-                gradient: 'from-blue-50 to-indigo-100',
-                icon: 'text-blue-600'
+                primary: 'bg-[#125F95] hover:bg-[#0D253C]',
+                secondary: 'bg-[#125F95]/10 text-[#125F95]',
+                accent: 'text-[#125F95]',
+                border: 'border-[#125F95]/20',
+                gradient: 'from-[#EAF3F9] to-[#CFE3F2]',
+                icon: 'text-[#125F95]'
             };
         } else {
             return {
@@ -112,9 +112,9 @@ export default function LoginPage() {
     ];
 
     if (loading) {
-        return (
+    return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#125F95]"></div>
             </div>
         );
     }
@@ -127,13 +127,7 @@ export default function LoginPage() {
                     <div className="max-w-md">
                     
                                                 <div className="flex items-center mb-10">
-                                                    <div className={`inline-flex items-center justify-center w-16 h-16 ${user?.role ? theme.primary : 'bg-white'} rounded-2xl mr-4`}>
-                                                       <img
-                                                                       src="/images/logo.png"
-                                                                       alt="IGER Logo"
-                                                                       className="w-full h-full object-cover"
-                                                                     />
-                                                    </div>
+                                                    
                                                     <div>
                                                         <p className="text-gray-600 text-lg font-semibold">Pasar Ikan Digital</p>
                                                     </div>
@@ -149,8 +143,8 @@ export default function LoginPage() {
 
                             {(user?.role === 'pangkalan' ? pangkalanFeatures : buyerFeatures).map((feature, index) => (
                                 <div key={index} className="flex items-start space-x-4">
-                                    <div className={`flex-shrink-0 w-12 h-12 ${user?.role ? theme.secondary : 'bg-blue-100'} rounded-xl flex items-center justify-center`}>
-                                        <feature.icon className={`w-6 h-6 ${user?.role ? theme.icon : 'text-blue-600'}`} />
+                                    <div className={`flex-shrink-0 w-12 h-12 ${user?.role ? theme.secondary : 'bg-[#125F95]/10'} rounded-xl flex items-center justify-center`}>
+                                        <feature.icon className={`w-6 h-6 ${user?.role ? theme.icon : 'text-[#125F95]'}`} />
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
@@ -184,7 +178,7 @@ export default function LoginPage() {
                         
                         {/* Mobile Logo */}
                         <div className="lg:hidden text-center mb-10">
-                            <div className={`inline-flex items-center justify-center w-16 h-16 ${user?.role ? theme.primary : 'bg-blue-600'} rounded-2xl mb-4`}>
+                            <div className={`inline-flex items-center justify-center w-16 h-16 ${user?.role ? theme.primary : 'bg-[#125F95]'} rounded-2xl mb-4`}>
                                 <Fish className="w-8 h-8 text-white" />
                             </div>
                             <h1 className="text-2xl font-bold text-gray-900">IGER</h1>
@@ -272,7 +266,7 @@ export default function LoginPage() {
                                         />
                                         <Button 
                                             type="submit" 
-                                            className={`w-full h-11 mt-6 ${user?.role ? theme.primary : 'bg-blue-600 hover:bg-blue-700'}`}
+                                            className={`w-full h-11 mt-6 ${user?.role ? theme.primary : 'bg-[#125F95]'}`}
                                             disabled={isLoading}
                                         >
                                             {isLoading ? "Masuk..." : "Masuk"}
@@ -286,7 +280,7 @@ export default function LoginPage() {
                                     Belum punya akun?{' '}
                                     <button 
                                         onClick={() => setShowRoleModal(true)}
-                                        className={`${user?.role ? theme.accent : 'text-blue-600'} hover:underline font-medium`}
+                                        className={`${user?.role ? theme.accent : 'text-[#125F95]'} hover:underline font-medium`}
                                     >
                                         Daftar di sini
                                     </button>
@@ -321,7 +315,7 @@ export default function LoginPage() {
 
             {/* Role Selection Modal */}
             {showRoleModal && (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in-0 duration-200">
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in-0 duration-200">
         <Card className="w-full max-w-md shadow-xl border-0 animate-in zoom-in-95 duration-200">
             <CardHeader className="text-center pb-6">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-600 rounded-full mb-4">
@@ -335,7 +329,7 @@ export default function LoginPage() {
             <CardContent className="space-y-4 px-6">
                 <Link href="/register?role=pangkalan">
                     <Button 
-                        className="w-full bg-blue-600 hover:bg-blue-700 h-16 text-base font-medium group"
+                        className="w-full bg-[#125F95] hover:bg-[#0D253C] h-16 text-base font-medium group"
                         onClick={() => setShowRoleModal(false)}
                     >
                         <div className="flex items-center justify-between w-full">
@@ -343,7 +337,7 @@ export default function LoginPage() {
                                 <Store className="w-5 h-5 mr-3" />
                                 <div className="text-left">
                                     <div>Pemilik Pangkalan</div>
-                                    <div className="text-xs text-blue-100 mt-1">Jual ikan online</div>
+                                    <div className="text-xs text-[#EAF3F9] mt-1">Jual ikan online</div>
                                 </div>
                             </div>
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -379,8 +373,8 @@ export default function LoginPage() {
                 </Button>
             </CardFooter>
         </Card>
-    </div>
-)}
+                </div>
+            )}
         </div>
     );
 }

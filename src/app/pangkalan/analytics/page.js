@@ -90,7 +90,7 @@ export default function AnalyticsPage() {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-8 h-8 border-4 border-[#125F95] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p>Memuat analytics...</p>
                 </div>
             </div>
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
                     <button
                         onClick={() => setTimeRange('7d')}
                         className={`px-3 py-1 rounded text-sm transition-colors ${
-                            timeRange === '7d' ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            timeRange === '7d' ? 'bg-[#125F95] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         }`}
                     >
                         7 Hari
@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
                     <button
                         onClick={() => setTimeRange('30d')}
                         className={`px-3 py-1 rounded text-sm transition-colors ${
-                            timeRange === '30d' ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            timeRange === '30d' ? 'bg-[#125F95] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         }`}
                     >
                         30 Hari
@@ -135,7 +135,7 @@ export default function AnalyticsPage() {
                     <button
                         onClick={() => setTimeRange('90d')}
                         className={`px-3 py-1 rounded text-sm transition-colors ${
-                            timeRange === '90d' ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            timeRange === '90d' ? 'bg-[#125F95] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         }`}
                     >
                         90 Hari
@@ -209,7 +209,7 @@ export default function AnalyticsPage() {
                                 </p>
                                 <p className="text-sm text-gray-500">per pesanan</p>
                             </div>
-                            <BarChart3 className="w-8 h-8 text-orange-600" />
+                            <BarChart3 className="w-8 h-8 text-[#125F95]" />
                         </div>
                     </CardContent>
                 </Card>
@@ -360,7 +360,7 @@ export default function AnalyticsPage() {
                     <CardContent>
                         <div className="space-y-4">
                             <div className="text-center p-4 bg-orange-50 rounded-lg">
-                                <p className="text-2xl font-bold text-orange-600">
+                                <p className="text-2xl font-bold text-[#125F95]">
                                     {analytics.orders.current}
                                 </p>
                                 <p className="text-sm text-gray-600">Total Pesanan</p>

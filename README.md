@@ -1,26 +1,77 @@
-# Next.js starter kit with Appwrite
+# iGer : Kecerdasan Buatan untuk Verifikasi Kesegaran dan Layanan Pengiriman Ikan
 
-Kickstart your Next.js development with this ready-to-use starter project integrated with [Appwrite](https://www.appwrite.io)
+Aplikasi iGer adalah platform modern berbasis Next.js yang mengintegrasikan AI untuk verifikasi kesegaran ikan serta layanan pengiriman ikan segar langsung ke pelanggan. Didukung oleh Appwrite sebagai backend, iGer menghadirkan pengalaman belanja ikan yang aman, cepat, dan terpercaya.
 
-## 🚀Getting started
+---
 
-###
-Clone the Project
-Clone this repository to your local machine using Git:
+## 🚀 Fitur Utama
 
-`git clone https://github.com/appwrite/starter-for-nextjs`
+- **Verifikasi Kesegaran Ikan dengan AI**  
+  Scan gambar ikan dan dapatkan hasil analisis kesegaran secara instan.
 
-## 🛠️ Development guid
-1. **Configure Appwrite**<br/>
-   Navigate to `.env` and update the values to match your Appwrite project credentials.
-2. **Customize as needed**<br/>
-   Modify the starter kit to suit your app's requirements. Adjust UI, features, or backend
-   integrations as per your needs.
-3. **Install dependencies**<br/>
-   Run `npm install` to install all dependencies.
-4. **Run the app**<br/>
-   Start the project by running `npm run dev`.
+- **Marketplace Ikan Segar**  
+  Jelajahi katalog ikan dari berbagai pangkalan terpercaya.
 
-## 💡 Additional notes
-- This starter project is designed to streamline your Next.js development with Appwrite.
-- Refer to the [Appwrite documentation](https://appwrite.io/docs) for detailed integration guidance.
+- **Pengiriman Cepat & Real-time Tracking**  
+  Pantau status pesanan dan pengiriman secara langsung.
+
+- **Dashboard Pembeli & Pangkalan**  
+  Kelola pesanan, riwayat scan, dan statistik transaksi.
+
+- **Chatbot & Bantuan AI**  
+  Konsultasi seputar ikan, resep, dan tips memasak.
+
+---
+
+## 🛠️ Cara Instalasi & Penggunaan
+
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/Sinduaditya/iger
+   cd iger
+   ```
+
+2. **Konfigurasi Appwrite**
+   - Update file `.env` dengan kredensial Appwrite Anda.
+
+3. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Jalankan Aplikasi**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 👤 Akun Demo Pembeli
+
+- **Email:** pembeli@pembeli.com
+- **Password:** pembeli123
+
+---
+
+## 👤 Akun Demo Pangkalan Ikan
+
+- **Email:** pangkalan@pangkalan.com
+- **Password:** pangkalan123
+
+---
+
+## 📚 Dokumentasi & Bantuan
+
+- [Appwrite Documentation](https://appwrite.io/docs)
+- [Next.js Documentation](https://nextjs.org/docs)
+
+---
+
+## 💡 Catatan
+
+- Pastikan gambar yang di-upload sudah dioptimasi agar aplikasi tetap ringan dan cepat.
+- Untuk pengalaman terbaik, gunakan browser versi terbaru.
+
+---
+
+&copy; 2025 iGer. Platform Pengiriman Ikan Segar dengan

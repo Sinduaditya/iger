@@ -100,12 +100,8 @@ export default function HistoryPage() {
 
     const getBadgeColor = (freshness) => {
         switch (freshness) {
-            case 'Sangat Segar': 
+            case 'Segar': 
                 return 'bg-green-600 text-white border-green-600';
-            case 'Cukup Segar': 
-                return 'bg-yellow-500 text-white border-yellow-500';
-            case 'Kurang Segar': 
-                return 'bg-orange-600 text-white border-orange-600';
             case 'Tidak Segar': 
                 return 'bg-red-600 text-white border-red-600';
             default: 
@@ -126,18 +122,15 @@ export default function HistoryPage() {
 
     const filterOptions = [
         { value: 'all', label: 'Semua Hasil', icon: Archive },
-        { value: 'sangat_segar', label: 'Sangat Segar', icon: CheckCircle2 },
-        { value: 'cukup_segar', label: 'Cukup Segar', icon: TrendingUp },
-        { value: 'kurang_segar', label: 'Kurang Segar', icon: BarChart3 },
+        { value: 'segar', label: 'Segar', icon: CheckCircle2 },
         { value: 'tidak_segar', label: 'Tidak Segar', icon: Archive }
     ];
 
     // Statistics calculation
     const stats = {
         total: scanHistory.length,
-        sangatSegar: scanHistory.filter(item => item.freshness === 'Sangat Segar').length,
-        cukupSegar: scanHistory.filter(item => item.freshness === 'Cukup Segar').length,
-        kurangSegar: scanHistory.filter(item => ['Kurang Segar', 'Tidak Segar'].includes(item.freshness)).length
+        segar: scanHistory.filter(item => item.freshness === 'Segar').length,
+        tidakSegar: scanHistory.filter(item => item.freshness === 'Tidak Segar').length
     };
 
     if (loading) {
@@ -174,7 +167,7 @@ export default function HistoryPage() {
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <div className="space-y-8">
                     {/* Statistics Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <Card className="shadow-lg border-0 bg-orange-600 text-white">
                             <CardContent className="p-6 text-center">
                                 <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-4 mx-auto">
@@ -189,17 +182,8 @@ export default function HistoryPage() {
                                 <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-4 mx-auto">
                                     <CheckCircle2 className="w-6 h-6" />
                                 </div>
-                                <div className="text-3xl font-bold">{stats.sangatSegar}</div>
-                                <div className="text-green-100 font-medium">Sangat Segar</div>
-                            </CardContent>
-                        </Card>
-                        <Card className="shadow-lg border-0 bg-yellow-500 text-white">
-                            <CardContent className="p-6 text-center">
-                                <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-4 mx-auto">
-                                    <TrendingUp className="w-6 h-6" />
-                                </div>
-                                <div className="text-3xl font-bold">{stats.cukupSegar}</div>
-                                <div className="text-yellow-100 font-medium">Cukup Segar</div>
+                                <div className="text-3xl font-bold">{stats.segar}</div>
+                                <div className="text-green-100 font-medium">Segar</div>
                             </CardContent>
                         </Card>
                         <Card className="shadow-lg border-0 bg-red-600 text-white">
@@ -207,11 +191,12 @@ export default function HistoryPage() {
                                 <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mb-4 mx-auto">
                                     <Archive className="w-6 h-6" />
                                 </div>
-                                <div className="text-3xl font-bold">{stats.kurangSegar}</div>
-                                <div className="text-red-100 font-medium">Kurang Segar</div>
+                                <div className="text-3xl font-bold">{stats.tidakSegar}</div>
+                                <div className="text-red-100 font-medium">Tidak Segar</div>
                             </CardContent>
                         </Card>
                     </div>
+
 
                     {/* Search and Filter Section */}
                     <Card className="shadow-lg border-0">

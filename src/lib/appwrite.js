@@ -6,23 +6,6 @@ const client = new Client();
 const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1';
 const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '66a312130033c02eaceb';
 
-// Log untuk debugging - jangan hapus sampai masalah teratasi
-console.log('🔧 Appwrite Configuration:', {
-    endpoint: endpoint,
-    projectId: projectId,
-    hasEndpoint: !!process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
-    hasProjectId: !!process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID
-});
-
-if (!endpoint || !projectId) {
-    console.error('❌ Missing Appwrite configuration:', { endpoint, projectId });
-    console.error('❌ Environment check:', {
-        NODE_ENV: process.env.NODE_ENV,
-        NEXT_PUBLIC_APPWRITE_ENDPOINT: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
-        NEXT_PUBLIC_APPWRITE_PROJECT_ID: process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID
-    });
-}
-
 // Inisialisasi client
 client
     .setEndpoint(endpoint)

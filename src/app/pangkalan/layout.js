@@ -43,7 +43,7 @@ const PangkalanLayout = ({ children }) => {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-50">
                 <div className="text-center">
-                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-8 h-8 border-4 border-[#125F95] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-600">Loading Pangkalan Dashboard...</p>
                 </div>
             </div>
@@ -101,7 +101,7 @@ const PangkalanLayout = ({ children }) => {
                             onClick={() => setShowUserMenu(!showUserMenu)}
                             className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-colors"
                         >
-                            <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+                            <div className="w-8 h-8 bg-[#125F95] rounded-full flex items-center justify-center">
                                 <span className="text-white text-sm font-medium">
                                     {user?.name?.charAt(0)?.toUpperCase() || 'P'}
                                 </span>
@@ -153,7 +153,7 @@ const PangkalanLayout = ({ children }) => {
                 <div className="p-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center">
+                            <div className="w-8 h-8 bg-[#125F95] rounded-lg flex items-center justify-center">
                                 <Fish className="w-5 h-5 text-white" />
                             </div>
                             <div>
@@ -183,13 +183,13 @@ const PangkalanLayout = ({ children }) => {
                                 className={`
                                     flex items-center space-x-3 p-3 rounded-lg transition-all duration-200
                                     ${active 
-                                        ? 'bg-orange-50 text-orange-700 border-r-2 border-orange-700' 
-                                        : 'text-gray-700 hover:bg-orange-50 hover:text-orange-700'
+                                        ? 'bg-[#125F95] text-white border-r-2 border-[#0D253C]' 
+                                        : 'text-gray-700 hover:bg-[#125F95]/10 hover:text-[#125F95]'
                                     }
                                 `}
                             >
-                                <Icon size={20} className={active ? 'text-orange-700' : 'text-gray-500'} />
-                                <span className={`font-medium ${active ? 'text-orange-700' : ''}`}>
+                                <Icon size={20} className={active ? 'text-white' : 'text-gray-500'} />
+                                <span className={`font-medium ${active ? 'text-white' : ''}`}>
                                     {item.label}
                                 </span>
                             </Link>
@@ -199,9 +199,9 @@ const PangkalanLayout = ({ children }) => {
 
                 {/* Sidebar Footer */}
                 <div className="absolute bottom-4 left-4 right-4">
-                    <div className="p-3 bg-gray-50 rounded-lg mb-3">
+                    <div className="p-3 bg-gray-50 rounded-lg mb-3 border border-gray-200">
                         <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-[#125F95] rounded-full flex items-center justify-center border-2 border-[#0D253C]">
                                 <span className="text-white font-medium">
                                     {user?.name?.charAt(0)?.toUpperCase() || 'P'}
                                 </span>

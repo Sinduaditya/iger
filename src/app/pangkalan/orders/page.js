@@ -115,7 +115,7 @@ export default function OrdersPage() {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-8 h-8 border-4 border-[#125F95] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p>Memuat pesanan...</p>
                 </div>
             </div>
@@ -132,42 +132,42 @@ export default function OrdersPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                <Card className={`cursor-pointer transition-colors ${activeTab === 'all' ? 'ring-2 ring-orange-500' : ''}`}
+                <Card className={`cursor-pointer transition-colors ${activeTab === 'all' ? 'ring-2 ring-[#125F95]' : ''}`}
                       onClick={() => setActiveTab('all')}>
                     <CardContent className="p-4 text-center">
                         <p className="text-2xl font-bold">{stats.total || 0}</p>
                         <p className="text-sm text-gray-600">Semua</p>
                     </CardContent>
                 </Card>
-                <Card className={`cursor-pointer transition-colors ${activeTab === 'pending' ? 'ring-2 ring-orange-500' : ''}`}
+                <Card className={`cursor-pointer transition-colors ${activeTab === 'pending' ? 'ring-2 ring-[#125F95]' : ''}`}
                       onClick={() => setActiveTab('pending')}>
                     <CardContent className="p-4 text-center">
                         <p className="text-2xl font-bold text-yellow-600">{stats.pending || 0}</p>
                         <p className="text-sm text-gray-600">Pending</p>
                     </CardContent>
                 </Card>
-                <Card className={`cursor-pointer transition-colors ${activeTab === 'confirmed' ? 'ring-2 ring-orange-500' : ''}`}
+                <Card className={`cursor-pointer transition-colors ${activeTab === 'confirmed' ? 'ring-2 ring-[#125F95]' : ''}`}
                       onClick={() => setActiveTab('confirmed')}>
                     <CardContent className="p-4 text-center">
                         <p className="text-2xl font-bold text-blue-600">{stats.confirmed || 0}</p>
                         <p className="text-sm text-gray-600">Dikonfirmasi</p>
                     </CardContent>
                 </Card>
-                <Card className={`cursor-pointer transition-colors ${activeTab === 'processing' ? 'ring-2 ring-orange-500' : ''}`}
+                <Card className={`cursor-pointer transition-colors ${activeTab === 'processing' ? 'ring-2 ring-[#125F95]' : ''}`}
                       onClick={() => setActiveTab('processing')}>
                     <CardContent className="p-4 text-center">
                         <p className="text-2xl font-bold text-purple-600">{stats.processing || 0}</p>
                         <p className="text-sm text-gray-600">Diproses</p>
                     </CardContent>
                 </Card>
-                <Card className={`cursor-pointer transition-colors ${activeTab === 'delivered' ? 'ring-2 ring-orange-500' : ''}`}
+                <Card className={`cursor-pointer transition-colors ${activeTab === 'delivered' ? 'ring-2 ring-[#125F95]' : ''}`}
                       onClick={() => setActiveTab('delivered')}>
                     <CardContent className="p-4 text-center">
                         <p className="text-2xl font-bold text-green-600">{stats.delivered || 0}</p>
                         <p className="text-sm text-gray-600">Dikirim</p>
                     </CardContent>
                 </Card>
-                <Card className={`cursor-pointer transition-colors ${activeTab === 'completed' ? 'ring-2 ring-orange-500' : ''}`}
+                <Card className={`cursor-pointer transition-colors ${activeTab === 'completed' ? 'ring-2 ring-[#125F95]' : ''}`}
                       onClick={() => setActiveTab('completed')}>
                     <CardContent className="p-4 text-center">
                         <p className="text-2xl font-bold text-green-600">{stats.completed || 0}</p>
@@ -229,7 +229,7 @@ export default function OrdersPage() {
                                 </div>
                                 <div className="flex flex-col md:items-end gap-3">
                                     <div className="text-right">
-                                        <p className="text-2xl font-bold text-orange-600">
+                                        <p className="text-2xl font-bold text-[#125F95]">
                                             {formatCurrency(order.total_amount)}
                                         </p>
                                     </div>
@@ -245,7 +245,7 @@ export default function OrdersPage() {
                                         {order.status === 'pending' && (
                                             <Button 
                                                 size="sm" 
-                                                className="bg-orange-600 hover:bg-orange-700"
+                                                className="bg-[#125F95] hover:bg-[#125F95]/60"
                                                 onClick={() => handleUpdateStatus(order.$id, 'confirmed')}
                                             >
                                                 Konfirmasi
@@ -368,7 +368,7 @@ export default function OrdersPage() {
                                     ))}
                                     <div className="flex justify-between items-center pt-2 font-semibold text-lg border-t border-gray-200">
                                         <span>Total:</span>
-                                        <span className="text-orange-600">{formatCurrency(selectedOrder.total_amount)}</span>
+                                        <span className="text-[#125F95]">{formatCurrency(selectedOrder.total_amount)}</span>
                                     </div>
                                 </div>
                             </div>
