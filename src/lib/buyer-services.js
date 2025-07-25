@@ -202,7 +202,19 @@ export const buyerService = {
 export const cartService = {
     async addToCart(buyerId, productId, pangkalanId, quantity, unitPrice) {
         try {
-            // Check if item already exists in cart
+            // Get all cart items for this buyer
+            const cartItems = await this.getCartItems(buyerId);
+
+            // If cart is not empty, check if all items are from the same pangkalan
+            if (cartItems.documents.length > 0) {
+                const existingPangkalanId = cartItems.documents[0].pangkalan_id;
+                if (existingPangkalanId !== pangkalanId) {
+                    // Notifikasi: produk dari pangkalan berbeda tidak bisa ditambah ke keranjang
+                    throw new Error('Anda hanya bisa memesan produk dari satu pangkalan dalam satu pesanan. Silakan selesaikan atau kosongkan keranjang Anda terlebih dahulu.');
+                }
+            }
+
+            // Check if this product is already in cart
             const existing = await databases.listDocuments(
                 DATABASE_ID,
                 CART_COLLECTION_ID,
@@ -213,14 +225,13 @@ export const cartService = {
             );
 
             if (existing.documents.length > 0) {
-                // Update quantity
-                const newQuantity = existing.documents[0].quantity + quantity; // ✅ Fixed: quantity
+                const newQuantity = existing.documents[0].quantity + quantity;
                 const response = await databases.updateDocument(
                     DATABASE_ID,
                     CART_COLLECTION_ID,
                     existing.documents[0].$id,
                     {
-                        quantity: newQuantity, // ✅ Fixed: quantity (bukan quantitiy)
+                        quantity: newQuantity,
                         total_price: newQuantity * unitPrice,
                         updated_at: new Date().toISOString()
                     }
@@ -236,8 +247,8 @@ export const cartService = {
                         buyer_id: buyerId,
                         product_id: productId,
                         pangkalan_id: pangkalanId,
-                        quantity: quantity, // ✅ Fixed: quantity (bukan quantitiy)
-                        unit_price: unitPrice, // ✅ Fixed: unit_price (bukan unite_price)
+                        quantity: quantity,
+                        unit_price: unitPrice,
                         total_price: quantity * unitPrice,
                         added_at: new Date().toISOString()
                     }
@@ -245,6 +256,7 @@ export const cartService = {
                 return response;
             }
         } catch (error) {
+            // Throw error so frontend can show modal/notifikasi
             console.error('Error adding to cart:', error);
             throw error;
         }

@@ -106,6 +106,19 @@ export default function ProductsPage() {
             return;
         }
         try {
+            // Ambil isi keranjang user
+            const cartItems = await cartService.getCartItems(user.$id);
+            // Jika keranjang tidak kosong, cek apakah semua item dari pangkalan yang sama
+            if (cartItems.documents.length > 0) {
+                const pangkalanIdInCart = cartItems.documents[0].pangkalan_id;
+                if (pangkalanIdInCart !== product.pangkalan_id) {
+                    toast.error(
+                        "Keranjang hanya bisa berisi produk dari satu pangkalan.",
+                        { description: "Selesaikan proses pada keranjang Anda sebelum menambah produk dari pangkalan lain." }
+                    );
+                    return;
+                }
+            }
             await cartService.addToCart(user.$id, product.$id, product.pangkalan_id, 1, product.price);
             toast.success(`${product.name} berhasil ditambahkan ke keranjang!`);
         } catch (error) {
@@ -247,7 +260,6 @@ function ProductGrid({ products, handleAddToCart, handleAddToFavorites, router, 
                                 className="flex-1 bg-orange-600 hover:bg-orange-700"
                                 onClick={async () => {
                                     await handleAddToCart(product);
-                                    toast.success(`${product.name} berhasil ditambahkan ke keranjang!`);
                                 }}
                             >
                                 <ShoppingCart className="w-4 h-4 mr-2" /> Keranjang

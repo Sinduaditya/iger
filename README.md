@@ -53,10 +53,16 @@ Aplikasi iGer adalah platform modern berbasis Next.js yang mengintegrasikan AI u
 
 ---
 
-## 👤 Akun Demo Pangkalan Ikan
+## 🏭 Akun Demo Pangkalan Ikan 
 
 - **Email:** pangkalan@pangkalan2.com
 - **Password:** pangkalan123
+
+---
+
+## 🤖🐟 Data Ikan untuk testing & Sample Model
+
+- [Link Menuju Google Drive](https://drive.google.com/drive/folders/1cdE_etxECdrZ0F4MZh6eoebRSENP3ORC?usp=sharing)
 
 ---
 

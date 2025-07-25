@@ -99,11 +99,22 @@ const PangkalanMap = ({ pangkalans, onPangkalanSelect, selectedPangkalan }) => {
 
     // UI/UX Improvement: Konten Tooltip & Popup dibuat lebih bersih
     const renderTooltipContent = (pangkalan) => (
-        <div className="p-1">
+        <div
+            className="p-1 cursor-pointer"
+            onClick={() => onPangkalanSelect(pangkalan.user_id)}
+            tabIndex={0}
+            role="button"
+            onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    onPangkalanSelect(pangkalan.user_id);
+                }
+            }}
+        >
             <h4 className="font-bold text-base text-gray-900">🏪 {pangkalan.pangkalan_name}</h4>
             <p className="text-xs text-blue-600 font-medium mt-1">
                 📦 {pangkalan.product_count || 0} produk tersedia
             </p>
+            <span className="block mt-1 text-xs text-orange-600 underline">Lihat detail pangkalan</span>
         </div>
     );
     
