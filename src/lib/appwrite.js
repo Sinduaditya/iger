@@ -66,6 +66,7 @@ export const authService = {
                 userData.password, 
                 userData.name
             );
+
             console.log('✅ User created in Auth:', user.$id);
 
             // Step 2: Auto login setelah register

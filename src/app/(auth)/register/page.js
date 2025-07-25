@@ -73,7 +73,7 @@ export default function RegisterPage() {
     const onSubmit = async (values) => {
         setIsLoading(true);
         try {
-            const result = await register(values, role);
+            const result = await register({ ...values, role }, role);
 
             if (result.success) {
                 toast.success("Registrasi berhasil! Selamat datang!");

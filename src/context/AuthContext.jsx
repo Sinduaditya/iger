@@ -101,11 +101,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData, role) => {
-    try {
+  try {
       setLoading(true);
       console.log("🚀 Starting registration process:", userData.email, role);
 
-      const user = await authService.register(userData);
+    // PERBAIKI: Kirim role ke authService.register!
+      const user = await authService.register(userData, role);
 
       // Wait longer untuk memastikan profile tersimpan
       await new Promise((resolve) => setTimeout(resolve, 2000));

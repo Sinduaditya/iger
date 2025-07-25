@@ -27,7 +27,7 @@ const pangkalanIcon = new L.Icon({
 });
 
 const PangkalanMap = ({ pangkalans, onPangkalanSelect, selectedPangkalan }) => {
-    const [mapCenter, setMapCenter] = useState([-6.2088, 106.8456]); // Default Jakarta
+    const [mapCenter, setMapCenter] = useState([-6.9667, 110.4167]); // Default Semarang
     const [mapZoom, setMapZoom] = useState(11);
     const [pangkalanProducts, setPangkalanProducts] = useState({});
     const [loadingProducts, setLoadingProducts] = useState({});
