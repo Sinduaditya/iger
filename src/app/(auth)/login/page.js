@@ -25,7 +25,8 @@ import {
     Star,
     ArrowRight,
     CheckCircle,
-    User
+    User,
+    X
 } from 'lucide-react';
 
 // Skema validasi form
@@ -315,64 +316,63 @@ export default function LoginPage() {
 
             {/* Role Selection Modal */}
             {showRoleModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in-0 duration-200">
-        <Card className="w-full max-w-md shadow-xl border-0 animate-in zoom-in-95 duration-200">
-            <CardHeader className="text-center pb-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-600 rounded-full mb-4">
-                    <Fish className="w-6 h-6 text-white" />
-                </div>
-                <CardTitle className="text-xl mb-2">Pilih Jenis Akun</CardTitle>
-                <CardDescription className="text-gray-500">
-                    Ingin mendaftar sebagai apa?
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 px-6">
-                <Link href="/register?role=pangkalan">
-                    <Button 
-                        className="w-full bg-[#125F95] hover:bg-[#0D253C] h-16 text-base font-medium group"
-                        onClick={() => setShowRoleModal(false)}
-                    >
-                        <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center">
-                                <Store className="w-5 h-5 mr-3" />
-                                <div className="text-left">
-                                    <div>Pemilik Pangkalan</div>
-                                    <div className="text-xs text-[#EAF3F9] mt-1">Jual ikan online</div>
-                                </div>
-                            </div>
-                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                    </Button>
-                </Link>
-                <Link href="/register?role=user">
-                    <Button 
-                        variant="outline" 
-                        className="w-full h-16 text-base font-medium border-2 hover:bg-orange-50 hover:border-orange-200 group"
-                        onClick={() => setShowRoleModal(false)}
-                    >
-                        <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center">
-                                <Fish className="w-5 h-5 mr-3 text-orange-600" />
-                                <div className="text-left">
-                                    <div className="text-gray-900">Pembeli Ikan</div>
-                                    <div className="text-xs text-gray-500 mt-1">Beli ikan segar</div>
-                                </div>
-                            </div>
-                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-orange-600" />
-                        </div>
-                    </Button>
-                </Link>
-            </CardContent>
-            <CardFooter className="pt-4 px-6">
-                <Button 
-                    variant="ghost" 
-                    className="w-full text-gray-500 hover:text-gray-700"
-                    onClick={() => setShowRoleModal(false)}
-                >
-                    Batal
-                </Button>
-            </CardFooter>
-        </Card>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in-0 duration-300">
+                    <Card className="w-full max-w-2xl shadow-xl border-0 animate-in zoom-in-95 duration-300 relative">
+                             {/* Tombol Close di pojok */}
+                             <Button 
+                                 variant="ghost" 
+                                 size="icon" 
+                                 className="absolute top-3 right-3 text-gray-400 hover:text-gray-900 z-10"
+                                 onClick={() => setShowRoleModal(false)}
+                             >
+                                 <X className="w-5 h-5" />
+                                 <span className="sr-only">Tutup</span>
+                             </Button>
+
+                             <CardHeader className="text-center pt-10 pb-6">
+                                 <CardTitle className="text-2xl font-bold">Pilih Tipe Akun Anda</CardTitle>
+                                 <CardDescription className="text-gray-500 mt-2">
+                                     Untuk melanjutkan, beri tahu kami Anda ingin mendaftar sebagai siapa.
+                                 </CardDescription>
+                             </CardHeader>
+                             <CardContent className="px-6 pb-8">
+                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                     {/* Pilihan 1: Pemilik Pangkalan */}
+                                     <Link href="/register?role=pangkalan" onClick={() => setShowRoleModal(false)}>
+                                         <div className="group border-2 border-gray-200 rounded-lg p-6 h-full flex flex-col justify-between hover:border-[#125F95] hover:bg-blue-50 transition-all duration-200 cursor-pointer">
+                                             <div>
+                                                 <Store className="w-8 h-8 mb-4 text-[#125F95]" />
+                                                 <h3 className="text-lg font-semibold text-gray-900">Pemilik Pangkalan</h3>
+                                                 <p className="text-sm text-gray-500 mt-1">
+                                                     Perluas jangkauan dan jual hasil tangkapan Anda secara online.
+                                                 </p>
+                                             </div>
+                                             <div className="flex items-center text-sm font-medium text-[#125F95] mt-6">
+                                                 Daftar sebagai Penjual
+                                                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                             </div>
+                                         </div>
+                                     </Link>
+
+                                     {/* Pilihan 2: Pembeli Ikan */}
+                                     <Link href="/register?role=user" onClick={() => setShowRoleModal(false)}>
+                                         <div className="group border-2 border-gray-200 rounded-lg p-6 h-full flex flex-col justify-between hover:border-orange-600 hover:bg-orange-50 transition-all duration-200 cursor-pointer">
+                                             <div>
+                                                 <Fish className="w-8 h-8 mb-4 text-orange-600" />
+                                                 <h3 className="text-lg font-semibold text-gray-900">Pembeli Ikan</h3>
+                                                 <p className="text-sm text-gray-500 mt-1">
+                                                     Temukan dan beli ikan segar langsung dari pangkalan terpercaya.
+                                                 </p>
+                                             </div>
+                                             <div className="flex items-center text-sm font-medium text-orange-600 mt-6">
+                                                 Daftar sebagai Pembeli
+                                                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                             </div>
+                                         </div>
+                                     </Link>
+                                 </div>
+                             </CardContent>
+                    </Card>
                 </div>
             )}
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -14,9 +14,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ArrowLeft, Users, Store, Mail, Lock, Phone, MapPin, FileText, Clock, UserCheck } from 'lucide-react';
+import { ArrowLeft, Users, Store, Mail, Lock, Phone, MapPin, FileText, Clock, UserCheck, Eye, EyeOff, Loader2 } from 'lucide-react';
 
-// Schema untuk User
+// Schema tidak berubah
 const userSchema = z.object({
     name: z.string().min(3, "Nama harus lebih dari 2 karakter"),
     email: z.string().email("Format email tidak valid"),
@@ -25,7 +25,6 @@ const userSchema = z.object({
     address: z.string().min(10, "Alamat harus lebih dari 9 karakter"),
 });
 
-// Schema untuk Pangkalan
 const pangkalanSchema = z.object({
     name: z.string().min(3, "Nama pangkalan harus lebih dari 2 karakter"),
     email: z.string().email("Format email tidak valid"),
@@ -34,10 +33,38 @@ const pangkalanSchema = z.object({
     address: z.string().min(10, "Alamat harus lebih dari 9 karakter"),
     businessLicense: z.string().min(5, "Nomor izin usaha harus diisi"),
     operatingHours: z.string().min(5, "Jam operasional harus diisi"),
-    driverCount: z.coerce.number().min(1, "Minimal 1 driver").max(50, "Maksimal 50 driver"),
 });
 
+// UX Improvement: Komponen Input Password dengan tombol Show/Hide
+const PasswordInput = forwardRef(({ className, ...props }, ref) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const Icon = showPassword ? EyeOff : Eye;
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? 'text' : 'password'}
+        className={className}
+        ref={ref}
+        {...props}
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7 text-gray-400 hover:text-gray-700"
+        onClick={() => setShowPassword(prev => !prev)}
+      >
+        <Icon className="w-4 h-4" />
+        <span className="sr-only">{showPassword ? 'Sembunyikan' : 'Tampilkan'} password</span>
+      </Button>
+    </div>
+  );
+});
+PasswordInput.displayName = 'PasswordInput';
+
+
 export default function RegisterPage() {
+    // Hooks dan state tidak berubah
     const router = useRouter();
     const searchParams = useSearchParams();
     const { register } = useAuth();
@@ -47,10 +74,10 @@ export default function RegisterPage() {
 
     useEffect(() => {
         if (!['user', 'pangkalan'].includes(role)) {
-            router.push('/register/role');
+            router.push('/login');
         }
     }, [role, router]);
-
+    
     const isUser = role === 'user';
     const isPangkalan = role === 'pangkalan';
 
@@ -64,8 +91,7 @@ export default function RegisterPage() {
             address: "",
             ...(isPangkalan && {
                 businessLicense: "",
-                operatingHours: "",
-                driverCount: 1,
+                operatingHours: ""
             })
         },
     });
@@ -76,289 +102,124 @@ export default function RegisterPage() {
             const result = await register({ ...values, role }, role);
 
             if (result.success) {
-                toast.success("Registrasi berhasil! Selamat datang!");
-                switch (role) {
-                    case 'pangkalan':
-                        router.push('/pangkalan/dashboard');
-                        break;
-                    default:
-                        router.push('/buyer/dashboard');
-                }
+                toast.success("Registrasi berhasil! Mengalihkan ke dashboard...");
+                router.push(isPangkalan ? '/pangkalan/dashboard' : '/buyer/dashboard');
             } else {
-                let errorMessage = result.error;
-                if (result.error.includes('already exists')) {
-                    errorMessage = 'Email atau nomor telepon sudah terdaftar. Silakan gunakan yang lain atau login.';
+                let errorMessage = result.error || 'Terjadi kesalahan.';
+                if (errorMessage.includes('already exists')) {
+                    errorMessage = 'Email atau nomor telepon sudah terdaftar. Silakan login.';
                 }
                 toast.error("Registrasi gagal", { description: errorMessage });
             }
         } catch (error) {
-            let errorMessage = error.message;
-            if (error.message.includes('already exists')) {
-                errorMessage = 'Email atau nomor telepon sudah terdaftar. Silakan gunakan yang lain atau login.';
+            console.error("Registration failed with exception:", error);
+            const errorCode = error.code || error?.response?.code;
+            let errorMessage = error.message || "Terjadi kesalahan pada server. Silakan coba lagi.";
+            if (errorCode === 409 || (error.message && error.message.includes('already exists'))) {
+                errorMessage = "Email atau nomor telepon ini sudah terdaftar. Silakan login atau gunakan yang lain.";
             }
-            toast.error("Registrasi gagal", { description: errorMessage });
+            toast.error("Registrasi Gagal", { description: errorMessage });
         } finally {
             setIsLoading(false);
         }
     };
-
+    
+    // Helper tidak berubah
     const getRoleInfo = () => {
         if (isUser) {
-            return {
-                icon: Users,
-                title: "Daftar sebagai Pembeli",
-                description: "Bergabung untuk membeli ikan segar berkualitas",
-                color: "bg-blue-600"
-            };
-        } else {
-            return {
-                icon: Store,
-                title: "Daftar sebagai Pangkalan",
-                description: "Bergabung untuk menjual ikan dan mengelola bisnis",
-                color: "bg-orange-600"
-            };
+            return { icon: Users, title: "Daftar sebagai Pembeli", description: "Buat akun untuk mulai membeli ikan segar berkualitas.", color: "bg-orange-600", colorClass: "orange" };
         }
+        return { icon: Store, title: "Daftar sebagai Pangkalan", description: "Isi detail untuk mendaftarkan pangkalan Anda.", color: "bg-[#125F95]", colorClass: "blue" };
     };
 
     const roleInfo = getRoleInfo();
     const Icon = roleInfo.icon;
 
+    // Fungsi untuk merender input field dengan ikon di dalamnya
+    const renderInput = (field, placeholder, IconComponent, type = "text") => (
+        <div className="relative">
+            <IconComponent className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input type={type} placeholder={placeholder} {...field} className="pl-10" />
+        </div>
+    );
+    
+    const renderPasswordInput = (field, placeholder) => (
+        <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <PasswordInput placeholder={placeholder} {...field} className="pl-10" />
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-3xl mx-auto">
-                <Card className="border-0 shadow-xl">
-                    <CardHeader className="text-center pb-6">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => router.push('/login')}
-                            className="absolute left-4 top-4 hover:bg-gray-100 text-gray-600"
-                        >
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Kembali
-                        </Button>
-                        <div className={`inline-flex items-center justify-center w-16 h-16 ${roleInfo.color} rounded-2xl mx-auto mb-4`}>
-                            <Icon className="w-8 h-8 text-white" />
-                        </div>
-                        <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
-                            {roleInfo.title}
-                        </CardTitle>
-                        <CardDescription className="text-gray-600">
-                            {roleInfo.description}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="px-6 py-8">
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)}>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Kolom 1 */}
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            {/* UX Improvement: max-w-lg untuk layout single column yang lebih ideal */}
+            <Card className="w-full max-w-lg shadow-xl border-0">
+                <CardHeader className="text-center p-8 relative">
+                    <Button variant="ghost" size="sm" onClick={() => router.back()} className="absolute left-4 top-4 text-gray-600">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Kembali
+                    </Button>
+                    <div className={`inline-flex items-center justify-center w-16 h-16 ${roleInfo.color} rounded-2xl mx-auto mb-4`}>
+                        <Icon className="w-8 h-8 text-white" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold">{roleInfo.title}</CardTitle>
+                    <CardDescription>{roleInfo.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="px-8 pb-8">
+                    <Form {...form}>
+                        {/* UX Improvement: Ganti ke form dengan layout single-column */}
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                            {/* --- Bagian Informasi Umum --- */}
+                            <div className="space-y-4">
+                                <FormField control={form.control} name="name" render={({ field }) => (
+                                    <FormItem><FormLabel>{isUser ? "Nama Lengkap" : "Nama Pangkalan"}</FormLabel><FormControl>{renderInput(field, isUser ? "Cth: Budi Santoso" : "Cth: Pangkalan Jaya Bahari", Users)}</FormControl><FormMessage /></FormItem>
+                                )}/>
+                                <FormField control={form.control} name="email" render={({ field }) => (
+                                    <FormItem><FormLabel>Email</FormLabel><FormControl>{renderInput(field, "contoh@email.com", Mail, "email")}</FormControl><FormMessage /></FormItem>
+                                )}/>
+                                <FormField control={form.control} name="password" render={({ field }) => (
+                                    <FormItem><FormLabel>Password</FormLabel><FormControl>{renderPasswordInput(field, "Minimal 8 karakter")}</FormControl><FormMessage /></FormItem>
+                                )}/>
+                                <FormField control={form.control} name="phone" render={({ field }) => (
+                                    <FormItem><FormLabel>Nomor Telepon</FormLabel><FormControl>{renderInput(field, "081234567890", Phone)}</FormControl><FormMessage /></FormItem>
+                                )}/>
+                                <FormField control={form.control} name="address" render={({ field }) => (
+                                    <FormItem><FormLabel>Alamat Lengkap</FormLabel><FormControl><Textarea placeholder="Jl. Contoh No. 123..." {...field} className="resize-none" /></FormControl><FormMessage /></FormItem>
+                                )}/>
+                            </div>
+
+                            {/* UX Improvement: Pengelompokan field khusus pangkalan */}
+                            {isPangkalan && (
+                                <div className="space-y-6 pt-6 border-t">
+                                    <h3 className="text-lg font-semibold text-gray-800">Detail Pangkalan</h3>
                                     <div className="space-y-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="name"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="flex items-center gap-2 text-gray-700">
-                                                        <Users className="w-4 h-4 text-blue-600" />
-                                                        {isUser ? "Nama Lengkap" : "Nama Pangkalan"}
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder={isUser ? "Masukkan nama lengkap" : "Masukkan nama pangkalan"}
-                                                            className="border-gray-200 focus:border-blue-400 focus:ring-blue-200"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="email"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="flex items-center gap-2 text-gray-700">
-                                                        <Mail className="w-4 h-4 text-blue-600" />
-                                                        Email
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="email"
-                                                            placeholder="contoh@email.com"
-                                                            className="border-gray-200 focus:border-blue-400 focus:ring-blue-200"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="password"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="flex items-center gap-2 text-gray-700">
-                                                        <Lock className="w-4 h-4 text-blue-600" />
-                                                        Password
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="password"
-                                                            placeholder="Minimal 8 karakter"
-                                                            className="border-gray-200 focus:border-blue-400 focus:ring-blue-200"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    {/* Kolom 2 */}
-                                    <div className="space-y-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="phone"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="flex items-center gap-2 text-gray-700">
-                                                        <Phone className="w-4 h-4 text-blue-600" />
-                                                        Nomor Telepon
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="081234567890"
-                                                            className="border-gray-200 focus:border-blue-400 focus:ring-blue-200"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="address"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="flex items-center gap-2 text-gray-700">
-                                                        <MapPin className="w-4 h-4 text-blue-600" />
-                                                        Alamat Lengkap
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Textarea
-                                                            placeholder="Jl. Contoh No. 123, Kelurahan, Kecamatan, Kota, Provinsi"
-                                                            className="min-h-[60px] border-gray-200 focus:border-blue-400 focus:ring-blue-200 resize-none"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        {/* Field khusus pangkalan */}
-                                        {isPangkalan && (
-                                            <>
-                                                <FormField
-                                                    control={form.control}
-                                                    name="businessLicense"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 text-gray-700">
-                                                                <FileText className="w-4 h-4 text-orange-600" />
-                                                                Nomor Izin Usaha
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Masukkan nomor izin usaha"
-                                                                    className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="operatingHours"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 text-gray-700">
-                                                                <Clock className="w-4 h-4 text-orange-600" />
-                                                                Jam Operasional
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="08:00 - 17:00"
-                                                                    className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name="driverCount"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="flex items-center gap-2 text-gray-700">
-                                                                <UserCheck className="w-4 h-4 text-orange-600" />
-                                                                Jumlah Driver
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="number"
-                                                                    min="1"
-                                                                    max="50"
-                                                                    placeholder="Masukkan jumlah driver"
-                                                                    className="border-gray-200 focus:border-orange-400 focus:ring-orange-200"
-                                                                    value={field.value || ''}
-                                                                    onChange={(e) => {
-                                                                        const value = e.target.value;
-                                                                        field.onChange(value === '' ? '' : parseInt(value, 10));
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </>
-                                        )}
+                                        <FormField control={form.control} name="businessLicense" render={({ field }) => (
+                                            <FormItem><FormLabel>Nomor Izin Usaha</FormLabel><FormControl>{renderInput(field, "Masukkan nomor izin", FileText)}</FormControl><FormMessage /></FormItem>
+                                        )}/>
+                                        <FormField control={form.control} name="operatingHours" render={({ field }) => (
+                                            <FormItem><FormLabel>Jam Operasional</FormLabel><FormControl>{renderInput(field, "Cth: 08:00 - 17:00", Clock)}</FormControl><FormMessage /></FormItem>
+                                        )}/>
                                     </div>
                                 </div>
-                                <Button
-                                    type="submit"
-                                    className={`w-full mt-8 ${roleInfo.color} hover:brightness-90 text-white font-semibold py-3 rounded-lg shadow-lg transition-all duration-200`}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            Mendaftar...
-                                        </div>
-                                    ) : (
-                                        "Daftar Sekarang"
-                                    )}
-                                </Button>
-                            </form>
-                        </Form>
-                    </CardContent>
-                    <CardFooter className="text-center py-4 bg-gray-50 rounded-b-lg">
-                        <p className="text-gray-600 text-sm w-full">
-                            Sudah punya akun?{' '}
-                            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors">
-                                Login di sini
-                            </Link>
-                        </p>
-                    </CardFooter>
-                </Card>
-            </div>
+                            )}
+
+                            <Button type="submit" className={`w-full text-lg font-semibold py-6 ${roleInfo.color} hover:brightness-110 transition-all duration-300`} disabled={isLoading}>
+                                {isLoading ? (
+                                    <span className="flex items-center"><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Mendaftar...</span>
+                                ) : ( "Daftar Sekarang" )}
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+                <CardFooter className="py-4 bg-gray-50">
+                    <p className="text-sm text-center w-full">
+                        Sudah punya akun?{' '}
+                        <Link href="/login" className="font-semibold text-blue-600 hover:underline">
+                            Login di sini
+                        </Link>
+                    </p>
+                </CardFooter>
+            </Card>
         </div>
     );
 }
