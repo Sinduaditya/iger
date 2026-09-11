@@ -1,14 +1,14 @@
 import { databases, ID, Query } from './appwrite';
 
 // Database dan Collection IDs
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || '685e9c54000491e13998';
-const PANGKALAN_PRODUCTS_COLLECTION_ID = process.env.NEXT_PUBLIC_PANGKALAN_PRODUCTS_COLLECTION_ID || 'pangkalan_products';
-const ORDERS_COLLECTION_ID = process.env.NEXT_PUBLIC_ORDERS_COLLECTION_ID || 'orders';
-const ORDER_ITEMS_COLLECTION_ID = process.env.NEXT_PUBLIC_ORDER_ITEMS_COLLECTION_ID || 'order_items';
-const CART_COLLECTION_ID = process.env.NEXT_PUBLIC_CART_COLLECTION_ID || 'cart';
-const FAVORITES_COLLECTION_ID = process.env.NEXT_PUBLIC_FAVORITES_COLLECTION_ID || 'favorites';
-const REVIEWS_COLLECTION_ID = process.env.NEXT_PUBLIC_REVIEWS_COLLECTION_ID || 'reviews';
-const BUYER_ADDRESSES_COLLECTION_ID = process.env.NEXT_PUBLIC_BUYER_ADDRESSES_COLLECTION_ID || 'buyer_addresses';
+const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || '685e9c54000491e13998';
+const PANGKALAN_PRODUCTS_COLLECTION_ID = process.env.PANGKALAN_PRODUCTS_COLLECTION_ID || 'pangkalan_products';
+const ORDERS_COLLECTION_ID = process.env.ORDERS_COLLECTION_ID || 'orders';
+const ORDER_ITEMS_COLLECTION_ID = process.env.ORDER_ITEMS_COLLECTION_ID || 'order_items';
+const CART_COLLECTION_ID = process.env.CART_COLLECTION_ID || 'cart';
+const FAVORITES_COLLECTION_ID = process.env.FAVORITES_COLLECTION_ID || 'favorites';
+const REVIEWS_COLLECTION_ID = process.env.REVIEWS_COLLECTION_ID || 'reviews';
+const BUYER_ADDRESSES_COLLECTION_ID = process.env.BUYER_ADDRESSES_COLLECTION_ID || 'buyer_addresses';
 
 // Buyer Products Service
 export const buyerService = {

@@ -3,8 +3,8 @@ import { Client, Account, Databases, Storage, ID, Query } from 'appwrite';
 const client = new Client();
 
 // Pastikan environment variables ada dengan default values
-const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1';
-const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '66a312130033c02eaceb';
+const endpoint = process.env.APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1';
+const projectId = process.env.APPWRITE_PROJECT_ID || '66a312130033c02eaceb';
 
 // Inisialisasi client
 client
@@ -17,16 +17,16 @@ export const databases = new Databases(client);
 export const storage = new Storage(client);
 
 // Database dan Collection IDs dengan fallback
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || '685e9c54000491e13998';
-const USER_PROFILES_COLLECTION_ID = process.env.NEXT_PUBLIC_USER_PROFILES_COLLECTION_ID || '68758ae900139830951d';
-const SCAN_RESULTS_COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_SCAN_RESULTS_COLLECTION_ID || '687481df003bce9166b6';
-const STORAGE_BUCKET_ID = process.env.NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID || '686f2d1a002bba22496f';
+const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || '685e9c54000491e13998';
+const USER_PROFILES_COLLECTION_ID = process.env.USER_PROFILES_COLLECTION_ID || '68758ae900139830951d';
+const SCAN_RESULTS_COLLECTION_ID = process.env.APPWRITE_SCAN_RESULTS_COLLECTION_ID || '687481df003bce9166b6';
+const STORAGE_BUCKET_ID = process.env.APPWRITE_STORAGE_BUCKET_ID || '686f2d1a002bba22496f';
 
 // Pangkalan specific collection IDs - GANTI dengan ID yang sebenarnya
-const PANGKALAN_PRODUCTS_COLLECTION_ID = process.env.NEXT_PUBLIC_PANGKALAN_PRODUCTS_COLLECTION_ID || 'pangkalan_products';
-const ORDERS_COLLECTION_ID = process.env.NEXT_PUBLIC_ORDERS_COLLECTION_ID || 'orders';
-const ORDER_ITEMS_COLLECTION_ID = process.env.NEXT_PUBLIC_ORDER_ITEMS_COLLECTION_ID || 'order_items';
-const DRIVERS_COLLECTION_ID = process.env.NEXT_PUBLIC_DRIVERS_COLLECTION_ID || 'drivers';
+const PANGKALAN_PRODUCTS_COLLECTION_ID = process.env.PANGKALAN_PRODUCTS_COLLECTION_ID || 'pangkalan_products';
+const ORDERS_COLLECTION_ID = process.env.ORDERS_COLLECTION_ID || 'orders';
+const ORDER_ITEMS_COLLECTION_ID = process.env.ORDER_ITEMS_COLLECTION_ID || 'order_items';
+const DRIVERS_COLLECTION_ID = process.env.DRIVERS_COLLECTION_ID || 'drivers';
 
 export const COLLECTION_IDS = {
     USER_PROFILES: USER_PROFILES_COLLECTION_ID,
